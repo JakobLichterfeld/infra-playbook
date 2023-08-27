@@ -1,0 +1,16 @@
+.DS_Store
+.fact_cache
+.vscode
+hosts
+!hosts_example
+#/group_vars/
+!/group_vars/.gitkeep
+#/host_vars/
+!/host_vars/.gitkeep
+!/group_vars/all/vars.yml
+/roles/remarkable_templates_and_splashscreen/files
+!/roles/remarkable_templates_and_splashscreen/files/.gitkeep
+test.yml
+test_roles.yml
+vault_*
+!vault_pass.sh
