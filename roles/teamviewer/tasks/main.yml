@@ -1,0 +1,69 @@
+---
+- name: Install Block
+  block:
+    - name: Check if i386 is enabled
+      # shell because the ansible.builtin.dpkg_selections command does only support selection in Ansible. And command does not allow piping
+      ansible.builtin.shell:
+        cmd: dpkg --print-foreign-architectures | grep i386
+      register: result_i386_check
+      changed_when: result_i386_check.rc == 1
+      failed_when: result_i386_check.rc > 1
+      when: ansible_architecture == "x86_64"
+
+    - name: Enable i386 architecture
+      # command because the ansible.builtin.dpkg_selections command does only support selection in Ansible.
+      ansible.builtin.command:
+        cmd: dpkg --add-architecture i386
+      register: add_architecture_output
+      changed_when: add_architecture_output.rc != 0
+      when: result_i386_check.rc != 0
+
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 0
+      when: add_architecture_output.changed and ansible_os_family == "Debian"
+
+    - name: Install Dependencies on 64Bit Systems
+      ansible.builtin.package:
+        name:
+          - libc6:i386
+          - libgcc1:i386
+          - libasound2:i386
+          - libfreetype6:i386
+          - zlib1g:i386
+          - libsm6:i386
+          - libxdamage1:i386
+          - libxext6:i386
+          - libxfixes3:i386
+          - libxrender1:i386
+          - libxtst6:i386
+        state: present
+      when: ansible_architecture == "x86_64"
+
+    - name: Create download dir on remote host if it does not exist
+      ansible.builtin.file:
+        path: "{{ download_dir_on_remote_host }}/teamviewer"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+
+    - name: Download Installer
+      # Use 32bit version even on 64 bit, because of no multiarch support from Teamviewer
+      # see: https://community.teamviewer.com/English/kb/articles/4351-install-older-teamviewer-classic-versions-on-linux#debian-mint-ubuntu-kubuntu-xubuntu
+      become: true
+      become_user: "{{ ansible_user }}"
+      ansible.builtin.get_url:
+        url: "http://download.teamviewer.com/download/teamviewer_i386.deb"
+        dest: "{{ download_dir_on_remote_host }}/teamviewer/teamviewer_i386.deb"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0644'
+        timeout: 60
+      register: teamviewer_installer
+
+    - name: Install
+      ansible.builtin.apt:
+        deb: "{{ download_dir_on_remote_host }}/teamviewer/teamviewer_i386.deb"
+      when: teamviewer_installer.changed
