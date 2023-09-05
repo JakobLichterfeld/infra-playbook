@@ -1,0 +1,63 @@
+---
+
+
+- name: Install Block
+  block:
+    - name: Create download dir on remote host if it does not exist
+      ansible.builtin.file:
+        path: "{{ download_dir_on_remote_host }}/ventoy"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+
+    - name: Download Installer
+      become: true
+      become_user: "{{ ansible_user }}"
+      ansible.builtin.get_url:
+        url: "https://github.com/ventoy/Ventoy/releases/download/v{{ ventoy.version }}/ventoy-{{ ventoy.version }}-linux.tar.gz"
+        dest: "{{ download_dir_on_remote_host }}/ventoy/ventoy-{{ ventoy.version }}-linux.tar.gz"
+        checksum: "{{ ventoy.checksum }}"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0644'
+        timeout: 60
+      register: ventoy_installer
+
+    - name: Clean destination folder if needed
+      ansible.builtin.file:
+        path: "{{ ventoy.destination }}/ventoy"
+        state: absent
+      when: ventoy_installer.changed
+
+    - name: Create destination folder if needed
+      ansible.builtin.file:
+        path: "{{ ventoy.destination }}/ventoy"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+      when: ventoy_installer.changed
+
+    - name: Install
+      ansible.builtin.unarchive:
+        src: "{{ download_dir_on_remote_host }}/ventoy/ventoy-{{ ventoy.version }}-linux.tar.gz"
+        dest: "{{ ventoy.destination }}/ventoy"
+        remote_src: true
+      when: ventoy_installer.changed
+
+    - name: Set Rights
+      ansible.builtin.file:
+        path: "{{ ventoy.destination }}/ventoy"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+        recurse: true
+
+    - name: Menu-Entry for all Users
+      ansible.builtin.template:
+        src: "startventoy.desktop.j2"
+        dest: "/usr/share/applications/startventoy.desktop"
+        owner: "root"
+        group: "root"
+        mode: '0644'
