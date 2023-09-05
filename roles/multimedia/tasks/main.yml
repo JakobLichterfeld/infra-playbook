@@ -1,0 +1,63 @@
+---
+- name: Install Block
+  block:
+    - name: Install Burning SW
+      ansible.builtin.package:
+        name:
+          - acetoneiso
+          - dvbcut
+          - isomaster
+          - k3b
+          - k3b-i18n
+          - libk3b7-extracodecs
+          - normalize-audio
+          - phonon4qt5-backend-gstreamer # Preview audio tracks withing the playlist editor is one of the features in K3b, you need to install Phonon sound backend for this
+        state: present
+
+    - name: Install Score Editors
+      ansible.builtin.package:
+        name:
+          - nted
+          - nted-doc
+        state: present
+
+    - name: Install Audio Video Tools
+      ansible.builtin.package:
+        name:
+          - timidity
+          - vlc
+          - faac
+          - faad
+          - flac
+          - libmad0
+          - libmpcdec6
+          - mppenc
+          - vorbis-tools
+          - wavpack
+          - soundconverter
+          - cheese
+        state: present
+
+    - name: Install Audio Tagging Tools
+      ansible.builtin.package:
+        name:
+          - easytag
+          - picard # MusicBrainz Picard
+        state: present
+
+    - name: Install flatpak
+      ansible.builtin.package:
+        name:
+          - flatpak
+          - gnome-software-plugin-flatpak
+        state: present
+
+    - name: Install Spotify
+      community.general.flatpak:
+        name: com.spotify.Client
+        state: present
+
+    - name: Install Spotube
+      community.general.flatpak:
+        name: com.github.KRTirtho.Spotube
+        state: present
