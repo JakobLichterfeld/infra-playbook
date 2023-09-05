@@ -1,0 +1,195 @@
+---
+- name: Create needed directories
+  block:
+    - name: Create backup dir on remote host if it does not exist
+      ansible.builtin.file:
+        path: "{{ backup_dir_on_remote_host }}"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+
+    - name: Create download dir on remote host if it does not exist
+      ansible.builtin.file:
+        path: "{{ download_dir_on_remote_host }}"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+
+- name: Update and upgrade packages
+  ansible.builtin.apt:
+    update_cache: yes
+    cache_valid_time: 3600
+    upgrade: yes
+    autoremove: yes
+
+- name: Backup source.list
+  ansible.builtin.copy:
+    src: "/etc/apt/sources.list"
+    dest: "/etc/apt/sources.list"
+    owner: "root"
+    group: "root"
+    mode: '0644'
+    backup: yes
+
+- name: Install essential packages
+  ansible.builtin.package:
+    name:
+      - debconf-utils
+      - python3-pip
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg-agent
+      - software-properties-common
+    state: present
+
+- name: Install restricted extras (mp3, etc.)
+  ansible.builtin.package:
+    name:
+      - ubuntu-restricted-extras
+    state: present
+
+- name: Install restricted Codecs
+  ansible.builtin.package:
+    name:
+      - libxvidcore4
+      - gstreamer1.0-plugins-base
+      - gstreamer1.0-plugins-good
+      - gstreamer1.0-plugins-ugly
+      - gstreamer1.0-plugins-bad
+      - gstreamer1.0-alsa
+      - gstreamer1.0-libav
+      - libquicktime2
+    state: present
+
+- name: Install MEncoder - video encoding/decoding tool
+  ansible.builtin.package:
+    name:
+      - mencoder
+      - lame
+    state: present
+
+- name: Install Java
+  ansible.builtin.package:
+    name:
+      - openjdk-18-jre
+    state: present
+
+- name: Install flatpak
+  ansible.builtin.package:
+    name:
+      - flatpak
+      - gnome-software-plugin-flatpak
+    state: present
+
+- name: Install snap
+  ansible.builtin.package:
+    name:
+      - snapd
+      - gnome-software-plugin-snap
+    state: present
+
+- name: Install KDE programs under Gnome
+  ansible.builtin.package:
+    name:
+      - language-pack-kde-de
+      - kde-cli-tools
+      - systemsettings
+      - kde-style-breeze
+    state: present
+
+- name: Install Samba support
+  ansible.builtin.package:
+    name:
+      - winbind
+    state: present
+
+- name: Install keyboard typing trainers
+  ansible.builtin.package:
+    name:
+      - klavaro
+      - ktouch
+    state: present
+
+- name: Install PDF SW
+  ansible.builtin.package:
+    name:
+      - diffpdf
+      - pdfsam
+      - qpdfview
+      - okular
+      - xournal
+    state: present
+
+- name: Install focus writing SW
+  ansible.builtin.package:
+    name:
+      - focuswriter
+    state: present
+
+- name: Install banking SW Hibiscus
+  ansible.builtin.package:
+    name:
+      - hibiscus
+    state: present
+
+- name: Remove Thunderbird
+  ansible.builtin.package:
+    name:
+      - thunderbird
+    state: absent
+
+- name: Install Warpinator
+  community.general.flatpak:
+    name: org.x.Warpinator
+    state: present
+
+- name: Install KeepassXC
+  ansible.builtin.package:
+    name:
+      - keepassxc
+    state: present
+
+- name: Install Firefox
+  ansible.builtin.package:
+    name:
+      - firefox
+      - language-pack-de-base
+      - firefox-locale-de
+    state: present
+
+- name: Install Skype
+  community.general.flatpak:
+    name: com.skype.Client
+    state: present
+
+- name: Install Discord
+  community.general.snap:
+    name: discord
+    state: present
+
+- name: Install Hollywood ("Hacker" output in Terminal like in Hollywood)
+  ansible.builtin.package:
+    name:
+      - hollywood
+    state: present
+
+- name: Install Unison GTK
+  ansible.builtin.package:
+    name:
+      - unison-gtk
+    state: present
+
+#
+# #############################################
+- name: Check if reboot required
+  ansible.builtin.stat:
+    path: /var/run/reboot-required
+  register: reboot_required_file
+
+- name: Message if Reboot is required
+  ansible.builtin.debug:
+    msg: Please reboot your system due to kernel updates to take effect
+  when: reboot_required_file.stat.exists
