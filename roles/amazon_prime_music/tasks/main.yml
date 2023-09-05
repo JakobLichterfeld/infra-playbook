@@ -1,0 +1,27 @@
+---
+- name: Install Block
+  block:
+    - name: Download Icon
+      ansible.builtin.get_url:
+        url: "https://lh3.googleusercontent.com/56Ejq3LHyO3v_u8culmbaJaT0unCj8BdO05WTeGycT0NjWb92XYr-POXv_Zdk6amEE0=w128"
+        dest: "/usr/share/icons/hicolor/48x48/apps/amazon_prime_music_big.png"
+        owner: "root"
+        group: "root"
+        mode: '0644'
+        timeout: 60
+      register: amazon_prime_music_icon
+
+    - name: Resize icon
+      # shell as the ansible.builtin.command does not allow multiple ""
+      ansible.builtin.shell: # noqa: command-instead-of-shell
+        cmd: convert "/usr/share/icons/hicolor/48x48/apps/amazon_prime_music_big.png" -resize '48x48' "/usr/share/icons/hicolor/48x48/apps/amazon_prime_music.png"
+        creates: "/usr/share/icons/hicolor/48x48/apps/amazon_prime_music.png"
+      when: amazon_prime_music_icon.changed
+
+    - name: Menu-Entry for all Users
+      ansible.builtin.template:
+        src: "amazon_prime_music.desktop.j2"
+        dest: "/usr/share/applications/amazon_prime_music.desktop"
+        owner: "root"
+        group: "root"
+        mode: '0644'
