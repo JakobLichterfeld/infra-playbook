@@ -1,0 +1,52 @@
+---
+- name: Install Block
+  block:
+    - name: Install XDG Desktop Portals
+      ansible.builtin.package:
+        name:
+          - xdg-desktop-portal
+          - xdg-desktop-portal-gtk
+        state: present
+
+    - name: Create Fax Printer
+      # shell as the ansible.builtin.command does not allow multiple arguments
+      ansible.builtin.shell: # noqa: command-instead-of-shell
+        cmd: lpadmin -p Roger-Router-Fax -m drv:///sample.drv/generic.ppd -v socket://localhost:9100/ -E -o PageSize=A4
+        creates: /etc/cups/ppd/Roger-Router-Fax.ppd
+
+    - name: Install flatpak
+      ansible.builtin.package:
+        name:
+          - flatpak
+          - gnome-software-plugin-flatpak
+        state: present
+
+    - name: Install
+      community.general.flatpak:
+        name:
+          - org.tabos.roger
+        state: present
+
+    - name: Create fax group
+      ansible.builtin.group:
+        name: fax
+        state: present
+
+    - name: Add User to fax group
+      ansible.builtin.user:
+        name: "{{ ansible_user }}"
+        groups: fax
+        append: yes
+      notify: Apply changes to group directly
+
+    - name: Flush Handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Autostart-Entry for all Users
+      ansible.builtin.template:
+        src: "startrogerrouter.desktop.j2"
+        dest: "/etc/xdg/autostart/startrogerrouter.desktop"
+        owner: "root"
+        group: "root"
+        mode: '0644'
+      when: roger_router.autostart_entry | bool
