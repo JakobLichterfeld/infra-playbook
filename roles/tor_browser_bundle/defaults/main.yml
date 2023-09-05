@@ -1,0 +1,9 @@
+---
+download_dir_on_remote_host: "/home/{{ ansible_user }}/Downloads/automatically_by_ansible_playbook"
+
+tor_browser_bundle:
+  destination: "/home/{{ ansible_user }}"
+  version: "12.5.3" # get from here: https://www.torproject.org/download/
+  checksum: # get from https://dist.torproject.org/torbrowser/
+    i386: "sha256:c5a2d3628f1a24ed03cc540b4941c5d76bca38430eea16d55d074bdcf1cb6fcb"
+    x86_64: "sha256:405ef5517657c0b8ebd57ba029e156647f515dbe3178a59949c76cfb1b4d7a42"

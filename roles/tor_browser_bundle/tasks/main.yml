@@ -1,0 +1,91 @@
+---
+- name: Install Block
+  block:
+    - name: Create download dir on remote host if it does not exist
+      ansible.builtin.file:
+        path: "{{ download_dir_on_remote_host }}/tor_browser_bundle"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+
+    - name: Download Installer for 32bit
+      become: true
+      become_user: "{{ ansible_user }}"
+      ansible.builtin.get_url:
+        url: "https://dist.torproject.org/torbrowser/{{ tor_browser_bundle.version }}/tor-browser-linux32-{{ tor_browser_bundle.version }}_ALL.tar.xz"
+        dest: "{{ download_dir_on_remote_host }}/tor_browser_bundle/tor-browser-linux32-{{ tor_browser_bundle.version }}_ALL.tar.xz"
+        checksum: "{{ tor_browser_bundle.checksum.i386 }}"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0644'
+        timeout: 60
+      register: tor_browser_bundle_installer
+      when: ansible_architecture == "i386"
+
+    - name: Download Installer for 64bit
+      become: true
+      become_user: "{{ ansible_user }}"
+      ansible.builtin.get_url:
+        url: "https://dist.torproject.org/torbrowser/{{ tor_browser_bundle.version }}/tor-browser-linux64-{{ tor_browser_bundle.version }}_ALL.tar.xz"
+        dest: "{{ download_dir_on_remote_host }}/tor_browser_bundle/tor-browser-linux64-{{ tor_browser_bundle.version }}_ALL.tar.xz"
+        checksum: "{{ tor_browser_bundle.checksum.x86_64 }}"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0644'
+        timeout: 60
+      register: tor_browser_bundle_installer
+      when: ansible_architecture == "x86_64"
+
+    - name: Clean destination folder if needed
+      ansible.builtin.file:
+        path: "{{ tor_browser_bundle.destination }}/tor_browser_bundle"
+        state: absent
+      when: tor_browser_bundle_installer.changed
+
+    - name: Create destination folder if needed
+      ansible.builtin.file:
+        path: "{{ tor_browser_bundle.destination }}/tor_browser_bundle"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+      when: tor_browser_bundle_installer.changed
+
+    - name: Install 32 Bit
+      ansible.builtin.unarchive:
+        src: "{{ download_dir_on_remote_host }}/tor_browser_bundle/tor-browser-linux32-{{ tor_browser_bundle.version }}_ALL.tar.xz"
+        dest: "{{ tor_browser_bundle.destination }}/tor_browser_bundle"
+        remote_src: true
+      when: tor_browser_bundle_installer.changed and ansible_architecture == "i386"
+
+    - name: Install 64 Bit
+      ansible.builtin.unarchive:
+        src: "{{ download_dir_on_remote_host }}/tor_browser_bundle/tor-browser-linux64-{{ tor_browser_bundle.version }}_ALL.tar.xz"
+        dest: "{{ tor_browser_bundle.destination }}/tor_browser_bundle"
+        remote_src: true
+      when: tor_browser_bundle_installer.changed and ansible_architecture == "x86_64"
+
+    - name: Set Rights
+      ansible.builtin.file:
+        path: "{{ tor_browser_bundle.destination }}/tor_browser_bundle/tor-browser"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+        recurse: true
+
+    - name: Set Execution Rights
+      ansible.builtin.file:
+        path: "{{ tor_browser_bundle.destination }}/tor_browser_bundle/tor-browser/start-tor-browser.desktop"
+        state: file
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+
+    - name: Menu-Entry for all Users
+      ansible.builtin.template:
+        src: "starttorbrowserbundle.desktop.j2"
+        dest: "/usr/share/applications/starttorbrowserbundle.desktop"
+        owner: "root"
+        group: "root"
+        mode: '0644'
