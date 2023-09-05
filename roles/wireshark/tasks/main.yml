@@ -1,0 +1,37 @@
+---
+- name: Install Block
+  block:
+    - name: Create wireshark group
+      ansible.builtin.group:
+        name: wireshark
+        state: present
+
+    - name: Add User to wireshark group
+      ansible.builtin.user:
+        name: "{{ ansible_user }}"
+        groups: wireshark
+        append: yes
+      notify: Apply changes to group directly
+
+    - name: Flush Handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Allow Wireshark Group to Snif Packages - Preset Noninteractive values
+      ansible.builtin.debconf:
+        name: wireshark-common
+        question: wireshark-common/install-setuid
+        value: 'true'
+        vtype: boolean
+      register: wireshark_debconf
+
+    - name: Install wireshark
+      ansible.builtin.package:
+        name:
+          - wireshark
+        state: present
+
+    - name: Reconfigure wireshark if needed
+      ansible.builtin.command:
+        cmd: dpkg-reconfigure -f noninteractive wireshark-common
+      changed_when: true # avoid lint error: no-changed-when
+      when: wireshark_debconf.changed
