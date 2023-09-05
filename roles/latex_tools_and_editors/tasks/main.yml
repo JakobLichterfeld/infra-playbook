@@ -1,0 +1,20 @@
+---
+- name: Install Block
+  block:
+    - name: Install
+      ansible.builtin.package:
+        name:
+          - latexmk
+          - chktex
+          - gummi
+          - libpdfbox-java
+        state: present
+
+    - name: Install more without dependencies
+      ansible.builtin.apt:
+        name:
+          - okular
+          - kile
+          - kile-l10n
+        install_recommends: no
+        state: present
