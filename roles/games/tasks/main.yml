@@ -1,0 +1,12 @@
+---
+- name: Install Block
+  block:
+    - name: Install
+      ansible.builtin.package:
+        name:
+          # - libopenal1
+          # - openarena
+          # - supertuxkart
+          # - xmoto
+          - steam
+        state: present
