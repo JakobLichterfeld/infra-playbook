@@ -13,3 +13,6 @@ rules:
 
 ignore: |
   .cache
+  .github/workflows/*.yml
+  .github/actions/*/*.yml
+
