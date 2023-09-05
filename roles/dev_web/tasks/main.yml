@@ -1,0 +1,6 @@
+---
+- name: Install
+  ansible.builtin.package:
+    name:
+      - tidy  # Syntax Check for HTML and XML files
+    state: present
