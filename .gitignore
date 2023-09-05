@@ -11,6 +11,7 @@ check_disk_space.yml
 !tasks/check_disk_space.yml
 test_something.yml
 test_something_roles.yml
+remarkable.yml
 vault_*
 !vault_pass.sh
 TODO.md
