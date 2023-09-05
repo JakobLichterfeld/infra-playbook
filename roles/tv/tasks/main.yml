@@ -1,0 +1,156 @@
+---
+# if [ "$tv" = "true" ]; then
+
+#     $ainstall miro
+
+#     #$ainstall tvheadend
+
+#     #usermod --append --groups video "$user"
+#     #usermod --append --groups video hts
+
+#     #ainstall mysql-server
+#     $ainstall mythtv
+#     $ainstall mythbrowser
+#     $ainstall mythexport
+#     $ainstall mythgallery
+#     $ainstall mythmusic
+#     $ainstall mythnetvision
+#     $ainstall mythnews
+#     $ainstall mythweather
+#     $ainstall mythweb
+#     usermod --append --groups mythtv "$user"
+#     ## Änderungen werden sofort wirksam
+#     newgrp - mythtv </dev/null
+
+#     if ! grep -q "#bind-address" /etc/mysql/my.cnf; then
+#         # backup the original file
+#         backup_config_file /etc/mysql/my.cnf
+#         sed 's/bind-address/#bind-address/' -i /etc/mysql/my.cnf
+#     fi
+
+#     #Theme and german data for weather plugin
+#     cp -a -r "$HOMEDIR"/Backup/mythtv/usr/share/mythtv/. /usr/share/mythtv/
+#     chmod 755 /usr/share/mythtv/themes/blue-abstract-wide
+
+#     # lirc
+#     $ainstall lirc
+#     $ainstall lirc-x
+#     $ainstall liblircclient0
+#     $ainstall lirc-modules-source
+#     $ainstall xautomation
+#     # backup the original files
+#     backup_config_file /etc/init.d/lirc
+#     backup_config_file /etc/modprobe.d/lirc.conf
+#     backup_config_file /etc/modprobe.d/serial_ir.conf
+#     backup_config_file /etc/modules
+#     backup_config_file /etc/udev/udev.rules
+#     backup_config_file /var/lib/setserial/autoserial.conf
+#     # lirc configuration
+#     cp -a -r "$HOMEDIR"/Backup/mythtv/etc/. /etc/
+#     chown -R root:root /etc/lirc
+#     chown -R root:root /etc/udev
+#     chown root:root /etc/modprobe.d/lirc.conf
+#     chown root:root /etc/modprobe.d/serial_ir.conf
+#     chown root:root /etc/modules
+#     cp -a -r "$HOMEDIR"/Backup/mythtv/home/. "$HOMEDIR"/
+#     cp -a -r "$HOMEDIR"/Backup/mythtv/var/lib/setserial/. /var/lib/setserial/
+#     chown -R root:root /var/lib/setserial/
+#     modprobe -r serial_ir
+#     modprobe serial_ir
+#     lircd
+#     setserial /dev/ttyS0 uart none
+
+#     #if irexec or irw returns "No such file or directory"
+#     if ! grep -q "mkdir /var/run/lirc/ && ln -s /dev/lircd /var/run/lirc/lircd" /etc/myrc.local; then
+#         # backup the original file
+#         backup_config_file /etc/myrc.local
+#         sed 's!exit 0!mkdir /var/run/lirc/ \&\& ln -s /dev/lircd /var/run/lirc/lircd!' -i /etc/myrc.local
+#         echo "exit 0" >>/etc/myrc.local
+#         myrc_local_used="true"
+#     fi
+
+#     #Autostart-Entry for User
+#     if ! grep -q "irexec -d /home/$user/.lircrc" "$HOMEDIR"/.profile; then
+#         # backup the original file
+#         backup_config_file "$HOMEDIR"/.profile
+#         echo "irexec -d /home/$user/.lircrc" >>"$HOMEDIR"/.profile
+#     fi
+
+#     #deactivate wlan before shutdown and activate it only on manual start
+#     cp -a -r "$HOMEDIR"/Backup/mythtv/usr/sbin/htpc.sh /usr/sbin/
+#     chown root:root /usr/sbin/htpc.sh
+#     chmod +x /usr/sbin/htpc.sh
+
+#     #Sundtek Tv Stick
+#     #if cd "$downloaddir"/sundtek; then :; else echo "$text_color_error""E: Could not cd to $downloaddir/sundtek""$text_reset"; fi
+#     #chmod 755 empia_installer_100211.sh
+#     #./empia_installer_100211.sh -u
+#     #./empia_installer_100211.sh
+#     # adjustments and lirc recovery
+#     #./after_install.sh
+#     #if cd "$HOMEDIR"; then :; else echo "$text_color_error""E: Could not cd to $HOMEDIR""$text_reset"; error_list="$error_list\\n- E: Could not cd to $HOMEDIR"; fi
+
+#     # auto weakeup
+#     cp -a -r "$HOMEDIR"/Backup/mythtv/usr/bin/. /usr/bin/
+#     chown root:root /usr/bin/setwakeup.sh
+#     chown root:root /usr/bin/setwakeup_own.py
+#     chown root:root /usr/bin/checklogin.sh
+#     chown root:root /usr/bin/my_checklogin.sh
+#     chmod +x /usr/bin/setwakeup.sh
+#     chmod +x /usr/bin/setwakeup_own.py
+#     chmod +x /usr/bin/checklogin.sh
+#     chmod +x /usr/bin/my_checklogin.sh
+#     # disable UTC time
+#     #if ! grep -q "UTC=yes" /etc/default/rcS; then
+#     #   # backup the original file
+#     #   backup_config_file /etc/default/rcS
+#     #   sed 's/UTC=yes/UTC=no/' -i /etc/default/rcS
+#     #fi
+
+#     #'shutdown -h -now' and wakeup scripts with user privileges
+#     if [ ! -f /etc/sudoers.d/mythtv ]; then
+#         # backup the original file
+#         backup_config_file /etc/sudoers #just in case we need it
+#         echo "#MythTV" | (sudo su -c 'EDITOR="tee -a" visudo -f /etc/sudoers.d/mythtv')
+#         echo "%mythtv ALL = NOPASSWD: /sbin/shutdown, /usr/bin/setwakeup.sh, /usr/bin/setwakeup_own.py, /usr/bin/checklogin.sh, /usr/bin/my_checklogin.sh" | (sudo su -c 'EDITOR="tee -a" visudo -f /etc/sudoers.d/mythtv')
+#         echo "#User" | (sudo su -c 'EDITOR="tee -a" visudo -f /etc/sudoers.d/mythtv')
+#         echo "%$user ALL = NOPASSWD: /sbin/shutdown, /sbin/reboot, /usr/sbin/htpc.sh" | (sudo su -c 'EDITOR="tee -a" visudo -f /etc/sudoers.d/mythtv')
+#         echo "" | (sudo su -c 'EDITOR="tee -a" visudo -f /etc/sudoers.d/mythtv')
+#     fi
+
+#     #restart mythbackend at each start, so the tuner is not blocked, see http://support.sundtek.com/index.php/topic,655.msg3931.html#msg3931
+#     touch /etc/sundtek.conf
+#     echo "device_attach=/usr/bin/mythtv_restart.sh" >/etc/sundtek.conf
+#     touch /usr/bin/mythtv_restart.sh
+#     echo "#!/bin/bash" >/usr/bin/mythtv_restart.sh
+#     echo "service mythtv-backend restart" >>/usr/bin/mythtv_restart.sh
+#     chmod 755 /usr/bin/mythtv_restart.sh
+#
+#     #pc speaker
+#     $ainstall beep
+#     modprobe -v pcspkr
+#     if ! grep -q "#blacklist pcspkr" /etc/modprobe.d/blacklist.conf; then
+#         # backup the original file
+#         backup_config_file /etc/modprobe.d/blacklist.conf
+#         #echo "#blacklist pcspkr" >> /etc/modprobe.d/blacklist.conf
+#         sed 's/blacklist pcspkr/#blacklist pcspkr/' -i /etc/modprobe.d/blacklist.conf
+#     fi
+
+#     # HDA Parameters for Realtek ALC887
+#     if head -n 1 /proc/asound/card0/codec* | grep -q "ALC887"; then
+#         if ! grep -q "options snd-hda-intel model=asus-p5q" /etc/modprobe.d/alsa-base.conf; then
+#             # backup the original file
+#             backup_config_file /etc/modprobe.d/alsa-base.conf
+#             echo "options snd-hda-intel model=asus-p5q" >>/etc/modprobe.d/alsa-base.conf
+#         fi
+#     fi
+
+#     # HDA Parameters for Realtek ALC1200
+#     if head -n 1 /proc/asound/card0/codec* | grep -q "ALC1200"; then
+#         if ! grep -q "options snd-hda-intel model=3stack-hp" /etc/modprobe.d/alsa-base.conf; then
+#             # backup the original file
+#             backup_config_file /etc/modprobe.d/alsa-base.conf
+#             echo "options snd-hda-intel model=3stack-hp" >>/etc/modprobe.d/alsa-base.conf
+#         fi
+#     fi
+# fi
