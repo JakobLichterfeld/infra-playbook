@@ -1,0 +1,22 @@
+---
+- name: Install Block
+  block:
+    - name: Preset Noninteractive values
+      ansible.builtin.debconf:
+        name: libdvd-pkg
+        question: libdvd-pkg/post-invoke_hook-remove
+        value: 'true'
+        vtype: select
+      register: libdvd_debconf
+
+    - name: Install libdvd-pkg
+      ansible.builtin.package:
+        name:
+          - libdvd-pkg
+        state: present
+
+    - name: Reconfigure libdvd-pkg if needed
+      ansible.builtin.command:
+        cmd: dpkg-reconfigure -f noninteractive libdvd-pkg
+      changed_when: true # avoid lint error: no-changed-when
+      when: libdvd_debconf.changed
