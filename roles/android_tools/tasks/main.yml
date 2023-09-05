@@ -1,0 +1,25 @@
+---
+- name: Install Block
+  block:
+    - name: Install
+      ansible.builtin.package:
+        name:
+          - android-tools-adb
+          - android-tools-fastboot
+          - sshfs
+        state: present
+
+    - name: Create fuse group
+      ansible.builtin.group:
+        name: fuse
+        state: present
+
+    - name: Add User to fuse group
+      ansible.builtin.user:
+        name: "{{ ansible_user }}"
+        groups: fuse
+        append: yes
+      notify: Apply changes to group directly
+
+    - name: Flush Handlers
+      ansible.builtin.meta: flush_handlers
