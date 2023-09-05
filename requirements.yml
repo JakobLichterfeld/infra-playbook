@@ -1,0 +1,13 @@
+---
+# install with: `ansible-galaxy install -r requirements.yml --force`
+roles:
+    #- name: geerlingguy.security
+    - name: geerlingguy.docker
+    - name: geerlingguy.pip
+    - name: geerlingguy.ansible
+    - name: jakoblichterfeld.latex_texlive
+    - name: jakoblichterfeld.amok_exifsorter
+    - name: jakoblichterfeld.android_studio
+    - name: jakoblichterfeld.winehq
+    - name: jakoblichterfeld.calibre
+    - name: jakoblichterfeld.sony_gps_assist_data
