@@ -1,0 +1,4 @@
+---
+dev_sw:
+  node_js:
+    version: "18"

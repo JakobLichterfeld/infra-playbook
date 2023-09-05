@@ -1,0 +1,29 @@
+---
+- name: Install Block
+  block:
+    - name: Install Dev Tools
+      ansible.builtin.package:
+        name:
+          - git
+          - meld
+          - binwalk
+          - python3
+          - python3-bashate
+        state: present
+
+    - name: Install snap
+      ansible.builtin.package:
+        name:
+          - snapd
+          - gnome-software-plugin-snap
+        state: present
+
+    - name: Install shellcheck
+      community.general.snap:
+        name: shellcheck
+        state: present
+
+    - name: Install shfmt - A shell parser, formatter and interpreter
+      community.general.snap:
+        name: shfmt
+        state: present
