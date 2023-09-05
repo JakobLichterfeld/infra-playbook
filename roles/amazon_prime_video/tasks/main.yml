@@ -1,0 +1,27 @@
+---
+- name: Install Block
+  block:
+    - name: Download Icon
+      ansible.builtin.get_url:
+        url: "https://superrepo.org/static/images/icons/original/xplugin.video.xycl_amazon_prime.png.pagespeed.ic.9UjIsRnplA.png"
+        dest: "/usr/share/icons/hicolor/48x48/apps/amazon_prime_video_big.png"
+        owner: "root"
+        group: "root"
+        mode: '0644'
+        timeout: 60
+      register: amazon_prime_video_icon
+
+    - name: Resize icon
+      # shell as the ansible.builtin.command does not allow multiple ""
+      ansible.builtin.shell: # noqa: command-instead-of-shell
+        cmd: convert "/usr/share/icons/hicolor/48x48/apps/amazon_prime_video_big.png" -resize '48x48' "/usr/share/icons/hicolor/48x48/apps/amazon_prime_video.png"
+        creates: "/usr/share/icons/hicolor/48x48/apps/amazon_prime_video.png"
+      when: amazon_prime_video_icon.changed
+
+    - name: Menu-Entry for all Users
+      ansible.builtin.template:
+        src: "amazon_prime_video.desktop.j2"
+        dest: "/usr/share/applications/amazon_prime_video.desktop"
+        owner: "root"
+        group: "root"
+        mode: '0644'
