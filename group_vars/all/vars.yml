@@ -1,0 +1,18 @@
+---
+backup_dir_on_remote_host: "/home/{{ ansible_user }}/Backup/automatically_by_ansible_playbook"
+download_dir_on_remote_host: "/home/{{ ansible_user }}/Downloads/automatically_by_ansible_playbook"
+
+#
+# Misc
+#
+hostname: "{{ inventory_hostname }}"
+
+timezone: "Europe/Berlin"
+
+ntp_timezone: "{{ timezone }}"
+
+locale: "de_DE.UTF-8"
+
+keyboard_layout: "de"
+
+guid: 1000
