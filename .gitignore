@@ -12,6 +12,7 @@ hosts
 !/roles/remarkable_templates_and_splashscreen/files/.gitkeep
 !/roles/remarkable_templates_and_splashscreen/files/splashscreens_to_copy/.gitkeep
 !/roles/remarkable_templates_and_splashscreen/files/templates_to_copy/.gitkeep
+/roles/test_role
 check_disk_space.yml
 !tasks/check_disk_space.yml
 test_something.yml
