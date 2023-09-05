@@ -11,3 +11,4 @@ roles:
     - name: jakoblichterfeld.winehq
     - name: jakoblichterfeld.calibre
     - name: jakoblichterfeld.sony_gps_assist_data
+    - name: jakoblichterfeld.remarkable_templates_and_splashscreen
