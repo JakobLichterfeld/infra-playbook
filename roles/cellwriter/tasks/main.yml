@@ -1,0 +1,26 @@
+---
+- name: Install Block
+  block:
+    - name: Install
+      ansible.builtin.package:
+        name:
+          - cellwriter
+        state: present
+
+    - name: Autostart-Entry for all Users
+      ansible.builtin.template:
+        src: "startcellwriter.desktop.j2"
+        dest: "/etc/xdg/autostart/startcellwriter.desktop"
+        owner: "root"
+        group: "root"
+        mode: '0644'
+
+    - name: Add Bash alias
+      ansible.builtin.lineinfile:
+        path: "/home/{{ ansible_user }}/.bash_aliases"
+        regexp: '^alias cellwriter='
+        line: "alias cellwriter='sh -c \"GDK_NATIVE_WINDOWS=true cellwriter\"'"
+      notify: Apply changes to bash_alias directly
+
+    - name: Flush Handlers
+      ansible.builtin.meta: flush_handlers
