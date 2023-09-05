@@ -1,0 +1,4 @@
+---
+download_dir_on_remote_host: "/home/{{ ansible_user }}/Downloads/automatically_by_ansible_playbook"
+
+unified_remote:

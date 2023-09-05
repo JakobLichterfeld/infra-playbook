@@ -1,0 +1,41 @@
+---
+- name: Install Block
+  block:
+    - name: Create download dir on remote host if it does not exist
+      ansible.builtin.file:
+        path: "{{ download_dir_on_remote_host }}/unified_remote"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+
+    - name: Download Installer for 32bit
+      become: true
+      become_user: "{{ ansible_user }}"
+      ansible.builtin.get_url:
+        url: "https://www.unifiedremote.com/download/linux-x86-deb"
+        dest: "{{ download_dir_on_remote_host }}/unified_remote/Unified_Remote_linux-i386-deb_latest.deb"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0644'
+        timeout: 60
+      register: unified_remote_installer
+      when: ansible_architecture == "i386"
+
+    - name: Download Installer for 64bit
+      become: true
+      become_user: "{{ ansible_user }}"
+      ansible.builtin.get_url:
+        url: "https://www.unifiedremote.com/download/linux-x64-deb"
+        dest: "{{ download_dir_on_remote_host }}/unified_remote/Unified_Remote_linux-x86_64-deb_latest.deb"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0644'
+        timeout: 60
+      register: unified_remote_installer
+      when: ansible_architecture == "x86_64"
+
+    - name: Install
+      ansible.builtin.apt:
+        deb: "{{ download_dir_on_remote_host }}/unified_remote/Unified_Remote_linux-{{ ansible_architecture }}-deb_latest.deb"
+      when: unified_remote_installer.changed
