@@ -1,0 +1,64 @@
+---
+- name: Install Block
+  block:
+    - name: Install
+      ansible.builtin.package:
+        name:
+          - digikam
+          - exiv2
+          - kipi-plugins
+          - geeqie
+          - graphicsmagick-imagemagick-compat
+          - libcanberra-gtk-module
+          - libcanberra-gtk3-module
+          - inkscape
+          - libwmf-bin
+          - pstoedit
+          - sketch
+          - mypaint
+          - metapixel
+          - tintii
+          - trimage
+          - photofilmstrip
+        state: present
+
+    - name: Install OSB Studio
+      ansible.builtin.package:
+        name:
+          - obs-studio
+        state: present
+
+    - name: Install flatpak
+      ansible.builtin.package:
+        name:
+          - flatpak
+          - gnome-software-plugin-flatpak
+        state: present
+
+    - name: Install Luminance HDR
+      community.general.flatpak:
+        name:
+          - net.sourceforge.qtpfsgui.LuminanceHDR
+        state: present
+
+    - name: Install Hugin
+      community.general.flatpak:
+        name: net.sourceforge.Hugin
+        state: present
+
+    - name: Install PhotoQt
+      community.general.flatpak:
+        name: org.photoqt.PhotoQt
+        state: present
+
+    - name: Install snap
+      ansible.builtin.package:
+        name:
+          - snapd
+          - gnome-software-plugin-snap
+        state: present
+
+    - name: Install Gimp
+      community.general.snap:
+        name: gimp
+        state: present
