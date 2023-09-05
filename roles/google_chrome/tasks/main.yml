@@ -1,0 +1,35 @@
+---
+- name: Install Block
+  block:
+    - name: Install dependencies
+      ansible.builtin.package:
+        name:
+          - xdg-utils
+          - wget
+          - xz-utils
+        state: present
+
+    - name: Create download dir on remote host if it does not exist
+      ansible.builtin.file:
+        path: "{{ download_dir_on_remote_host }}/google_chrome"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+
+    - name: Download installer
+      become: true
+      become_user: "{{ ansible_user }}"
+      ansible.builtin.get_url:
+        url: "https://dl.google.com/linux/direct/google-chrome-{{ google_chrome.version }}.deb"
+        dest: "{{ download_dir_on_remote_host }}/google_chrome/google-chrome-{{ google_chrome.version }}.deb"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0644'
+        timeout: 60
+      register: google_chrome_installer
+
+    - name: Install
+      ansible.builtin.apt:
+        deb: "{{ download_dir_on_remote_host }}/google_chrome/google-chrome-{{ google_chrome.version }}.deb"
+      when: google_chrome_installer.changed
