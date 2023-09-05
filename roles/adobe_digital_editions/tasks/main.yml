@@ -1,0 +1,47 @@
+---
+# - name: Install Block
+#   block:
+#     - name: Create download dir on remote host if it does not exist
+#       ansible.builtin.file:
+#         path: "{{ download_dir_on_remote_host }}/adobe_digital_editions"
+#         state: directory
+#         owner: "{{ ansible_user }}"
+#         group: "{{ ansible_user }}"
+#         mode: '0755'
+
+#     #libpng12 for Adobe Digital Editions, see https://github.com/tcoopman/image-webpack-loader/issues/95>
+#     - name: Download libpng12 for 64bit
+#       become: true
+#       become_user: "{{ ansible_user }}"
+#       ansible.builtin.get_url:
+#         url: "http://mirrors.kernel.org/ubuntu/pool/main/libp/libpng/libpng12-0_1.2.54-1ubuntu1_amd64.deb"
+#         dest: "{{ download_dir_on_remote_host }}/adobe_digital_editions/libpng12-0_1.2.54-1ubuntu1_amd64.deb"
+#         owner: "{{ ansible_user }}"
+#         group: "{{ ansible_user }}"
+#         mode: '0644'
+#         timeout: 60
+#       when: ansible_architecture == "x86_64"
+#       register: adobe_digital_editions_installer
+
+#     - name: Download libpng12 for 32bit
+#       become: true
+#       become_user: "{{ ansible_user }}"
+#       ansible.builtin.get_url:
+#         url: "http://mirrors.kernel.org/ubuntu/pool/main/libp/libpng/libpng12-0_1.2.54-1ubuntu1_i386.deb"
+#         dest: "{{ download_dir_on_remote_host }}/adobe_digital_editions/libpng12-0_1.2.54-1ubuntu1_i386.deb"
+#         owner: "{{ ansible_user }}"
+#         group: "{{ ansible_user }}"
+#         mode: '0644'
+#         timeout: 60
+#       when: ansible_architecture == "i386"
+#       register: adobe_digital_editions_installer
+
+#     - name: Install libpng12 for 64bit
+#       ansible.builtin.apt:
+#         deb: "{{ download_dir_on_remote_host }}/adobe_digital_editions/libpng12-0_1.2.54-1ubuntu1_amd64.deb"
+#       when: adobe_digital_editions_installer.changed and ansible_architecture == "x86_64"
+
+#     - name: Install libpng12 for 32bit
+#       ansible.builtin.apt:
+#         deb: "{{ download_dir_on_remote_host }}/adobe_digital_editions/libpng12-0_1.2.54-1ubuntu1_i386.deb"
+#       when: adobe_digital_editions_installer.changed and ansible_architecture == "i386"
