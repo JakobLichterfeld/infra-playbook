@@ -12,6 +12,7 @@ During the migration process, I have released the subsequent roles as individual
 | [ansible-role-android_studio](https://github.com/JakobLichterfeld/ansible-role-android_studio) | An Ansible role to install Android Studio via download |
 | [ansible-role-calibre](https://github.com/JakobLichterfeld/ansible-role-calibre) | An Ansible role to install Calibre via Binary Installer Download. |
 | [ansible-role-latex_texlive](https://github.com/JakobLichterfeld/ansible-role-latex_texlive) | An Ansible role to install LaTeX TeX Live via DVD download |
+| [ansible-role-remarkable_templates_and_splashscreen](https://github.com/JakobLichterfeld/ansible-role-remarkable_templates_and_splashscreen) | An Ansible role to change Remarkable Splash Screen and import own templates. |
 | [ansible-role-sony_gps_assist_data](https://github.com/JakobLichterfeld/ansible-role-sony_gps_assist_data) | An Ansible role to install Sony-GPS-Assist-Data Script via git checkout. |
 | [ansible-role-winehq](https://github.com/JakobLichterfeld/ansible-role-winehq) | An Ansible role to install WineHQ via repository. |
 
