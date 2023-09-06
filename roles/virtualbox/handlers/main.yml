@@ -1,0 +1,6 @@
+---
+- name: Apply changes to group directly
+  ansible.builtin.shell:
+    cmd: "newgrp - vboxusers </dev/null"
+  register: newgrp_result
+  changed_when: newgrp_result.stdout != ""

@@ -1,0 +1,56 @@
+---
+- name: Install Block
+  block:
+    - name: Install preparation packages
+      ansible.builtin.package:
+        name:
+          - gpg-agent
+        state: present
+
+    - name: Create Keyrings dir on remote host if it does not exist
+      ansible.builtin.file:
+        path: "/etc/apt/keyrings"
+        state: directory
+        owner: "root"
+        group: "root"
+        mode: '0755'
+
+    - name: Add GPG repository key
+      ansible.builtin.apt_key:
+        url: "https://www.virtualbox.org/download/oracle_vbox_2016.asc"
+        keyring: "/usr/share/keyrings/oracle-virtualbox-2016.gpg"
+
+    - name: Add repository
+      become: true
+      ansible.builtin.apt_repository:
+        repo: "deb [arch=amd64 signed-by=/usr/share/keyrings/oracle-virtualbox-2016.gpg] https://download.virtualbox.org/virtualbox/{{ ansible_os_family | lower }} {{ ansible_distribution_release | lower }} {{ virtualbox.variant }} #VirtualBox"
+        filename: virtualbox
+        state: present
+
+    - name: Install
+      ansible.builtin.package:
+        name:
+          - virtualbox-6.1
+          - build-essential
+          - dkms
+        state: present
+
+    - name: Create vboxusers group
+      ansible.builtin.group:
+        name: vboxusers
+        state: present
+
+    - name: Add User to vboxusers group
+      ansible.builtin.user:
+        name: "{{ ansible_user }}"
+        groups: vboxusers
+        append: yes
+      notify: Apply changes to group directly
+
+    - name: Flush Handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Load Kernel Modul
+      community.general.modprobe:
+        name: vboxdrv
+        state: present
