@@ -1,0 +1,17 @@
+---
+- name: Install Block
+  block:
+    - name: Add PPA Repository
+      become: true
+      apt_repository:
+        repo: "ppa:hluk/copyq"
+        filename: copyq
+        state: present
+        update_cache: yes
+
+    - name: Install
+      become: true
+      ansible.builtin.package:
+        name:
+          - copyq
+        state: present
