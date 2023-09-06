@@ -17,11 +17,17 @@
         group: "{{ ansible_user }}"
         mode: '0755'
 
-- name: Update and upgrade packages
+- name: Update the repository cache
   ansible.builtin.apt:
     update_cache: yes
     cache_valid_time: 3600
-    upgrade: yes
+
+- name: Remove useless packages from the cache
+  ansible.builtin.apt:
+    autoclean: yes
+
+- name: Remove dependencies that are no longer required
+  ansible.builtin.apt:
     autoremove: yes
 
 - name: Backup source.list
@@ -180,6 +186,20 @@
   ansible.builtin.package:
     name:
       - unison-gtk
+    state: present
+
+- name: Install Renaming Tools
+  ansible.builtin.package:
+    name:
+      - krename
+      - gprename
+    state: present
+
+- name: Install GPS Tools
+  ansible.builtin.package:
+    name:
+      - gpsbabel
+      - gpsbabel-gui
     state: present
 
 #
