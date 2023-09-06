@@ -16,5 +16,7 @@ vault_*
 !vault_pass.sh
 TODO.md
 logs.log
+files/splashscreens_to_copy/*
+files/templates_to_copy/*
 !.gitkeep
 !*/.gitkeep
