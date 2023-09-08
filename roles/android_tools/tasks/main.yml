@@ -7,6 +7,7 @@
           - android-tools-adb
           - android-tools-fastboot
           - sshfs
+          - scrcpy
         state: present
 
     - name: Create fuse group
