@@ -9,6 +9,8 @@
           - binwalk
           - python3
           - python3-bashate
+          - build-essential
+          - ca-certificates-java
         state: present
 
     - name: Install snap
