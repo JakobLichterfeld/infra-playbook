@@ -16,3 +16,9 @@ locale: "de_DE.UTF-8"
 keyboard_layout: "de"
 
 guid: 1000
+
+
+# Ntfy.sh
+ntfy:
+  url: "{{ vault_ntfy_url }}"
+  topic: "ansible"
