@@ -1,0 +1,67 @@
+---
+# - name: Install Block
+#   block:
+#     - name: Create DisplayCAL download dir on remote host if it does not exist
+#       ansible.builtin.file:
+#         path: "{{ download_dir_on_remote_host }}/displaycal"
+#         state: directory
+#         owner: "{{ ansible_user }}"
+#         group: "{{ ansible_user }}"
+#         mode: '0755'
+
+#     - name: Download Installer for 64bit
+#       become: true
+#       become_user: "{{ ansible_user }}"
+#       ansible.builtin.get_url:
+#         url: "https://displaycal.net/download/xUbuntu_19.10/amd64/DisplayCAL.deb" # no newer version
+#         dest: "{{ download_dir_on_remote_host }}/displaycal/DisplayCAL.deb"
+#         checksum: "{{ displaycal.checksum.x86_64 }}"
+#         owner: "{{ ansible_user }}"
+#         group: "{{ ansible_user }}"
+#         mode: '0644'
+#         timeout: 60
+#       register: displaycal_installer
+#       when: ansible_architecture == "x86_64"
+
+#     - name: Install
+#       ansible.builtin.apt:
+#         deb: "{{ download_dir_on_remote_host }}/displaycal/DisplayCAL.deb"
+#       when: displaycal_installer.changed and ansible_architecture == "x86_64"
+
+#     - name: Create Color Profile dir on remote host if it does not exist
+#       ansible.builtin.file:
+#         path: "/usr/local/argyllcms"
+#         state: directory
+#         owner: "{{ ansible_user }}"
+#         group: "{{ ansible_user }}"
+#         mode: '0755'
+
+#     - name: Script to set Color Profile
+#       ansible.builtin.template:
+#         src: "set_icc.j2"
+#         dest: "/usr/local/argyllcms/set_icc"
+#         owner: "root"
+#         group: "root"
+#         mode: '0644'
+
+#     - name: Autostart-Entry for all Users
+#       ansible.builtin.template:
+#         src: "icc-profile-loading.desktop.j2"
+#         dest: "/etc/xdg/autostart/icc-profile-loading.desktop"
+#         owner: "root"
+#         group: "root"
+#         mode: '0644'
+
+#     echo "$text_color_hint""You must copy your profile to '/usr/share/color/icc/DisplayA.icc'.""$text_reset"
+
+#     #Autostart-Entry for all Users
+#     touch /etc/xdg/autostart/monitor-setup.desktop
+#     echo [Desktop Entry] >/etc/xdg/autostart/monitor-setup.desktop
+#     {
+#         echo Version=1.0
+#         echo Name=Bildschirme und Farbprofile einstellen
+#         echo Exec=sh "$HOMEDIR"/Skripte/xrandr.sh
+#         echo Comment=Autostart für Bildschirme und Farbprofile einstellen
+#         echo Terminal=false
+#         echo Type=Application
+#     } >>/etc/xdg/autostart/monitor-setup.desktop
