@@ -1,0 +1,9 @@
+---
+- name: Install Block
+  block:
+    - name: Install
+      ansible.builtin.package:
+        name:
+          - exfat-fuse
+          - exfatprogs
+        state: present
