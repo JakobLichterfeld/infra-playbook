@@ -20,6 +20,9 @@
           - tintii
           - trimage
           - photofilmstrip
+          - jhead
+          - libjpeg-turbo-progs
+          - jpegoptim
         state: present
 
     - name: Install OSB Studio
