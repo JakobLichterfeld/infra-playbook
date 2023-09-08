@@ -1,0 +1,10 @@
+---
+- name: Install Block
+  block:
+    - name: Install
+      ansible.builtin.include_role:
+        name: geerlingguy.pip
+      vars:
+        pip_install_packages:
+        - name: garminexport
+          state: latest
