@@ -202,6 +202,104 @@
       - gpsbabel-gui
     state: present
 
+- name: Install Compiz Config Settings Manager
+  ansible.builtin.package:
+    name:
+      - compizconfig-settings-manager
+    state: present
+
+- name: Install GUI for Sensor Values
+  ansible.builtin.package:
+    name:
+      - psensor
+    state: present
+
+- name: Install GnuPG
+  ansible.builtin.package:
+    name:
+      - gnupg2
+      - seahorse
+      - seahorse-nautilus
+    state: present
+
+- name: Install Dconf Editor
+  ansible.builtin.package:
+    name:
+      - dconf-editor
+    state: present
+
+- name: Install Synaptic
+  ansible.builtin.package:
+    name:
+      - synaptic
+    state: present
+
+- name: Install gdebi
+  ansible.builtin.package:
+    name:
+      - gdebi
+    state: present
+
+- name: Install Gnome Tools
+  ansible.builtin.package:
+    name:
+      - gnome-settings-daemon
+      - gnome-sushi #instant file preview in nautilus by pressing space
+      - gnome-system-tools
+      - gnome-user-share
+      - nautilus-script-manager
+      - nautilus-image-converter
+    state: present
+
+- name: Install Spell Checker
+  ansible.builtin.package:
+    name:
+      - hunspell
+      - hunspell-fr
+    state: present
+
+- name: Install Device Manager
+  ansible.builtin.package:
+    name:
+      - hwinfo
+    state: present
+
+- name: Install Notifications
+  ansible.builtin.package:
+    name:
+      - libnotify-bin
+    state: present
+
+- name: Install Kernel Meta Packages
+  ansible.builtin.package:
+    name:
+      - linux-generic
+      - linux-headers-generic
+    state: present
+
+- name: Install Packaging Tools
+  ansible.builtin.package:
+    name:
+      - p7zip-full
+      - p7zip-rar
+      - rar
+      - unrar
+      - unace
+      - zip
+      - unzip
+    state: present
+
+- name: Install Reziser Tool for LVM
+  ansible.builtin.package:
+    name:
+      - reiserfsprogs
+    state: present
+
+- name: Install Hard disk status Tool
+  ansible.builtin.package:
+    name:
+      - smartmontools
+    state: present
 #
 # #############################################
 - name: Check if reboot required
