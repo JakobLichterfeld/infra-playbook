@@ -2,7 +2,18 @@
 - name: Install Block
   block:
     - name: Install
+      become: true
       ansible.builtin.package:
         name:
+          - samba
           - cifs-utils
+          - winbind
+        state: present
+
+    - name: Set Workgroup
+      become: true
+      ansible.builtin.lineinfile:
+        path: /etc/samba/smb.conf
+        regexp: '\s*workgroup\s*='
+        line: "   workgroup = {{ samba.workgroup }}"
         state: present

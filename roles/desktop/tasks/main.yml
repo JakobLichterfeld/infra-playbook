@@ -106,12 +106,6 @@
       - kde-style-breeze
     state: present
 
-- name: Install Samba support
-  ansible.builtin.package:
-    name:
-      - winbind
-    state: present
-
 - name: Install keyboard typing trainers
   ansible.builtin.package:
     name:
