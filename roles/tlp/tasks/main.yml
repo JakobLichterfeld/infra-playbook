@@ -1,0 +1,19 @@
+---
+- name: Install Block
+  block:
+    - name: Install
+      become: true
+      ansible.builtin.package:
+        name:
+          - tlp
+          - tlp-rdw
+          - tp-smapi-dkms
+          - acpi-call-dkms
+        state: present
+
+    - name: Start and enable
+      become: true
+      ansible.builtin.service:
+        name: tlp
+        state: started
+        enabled: true
