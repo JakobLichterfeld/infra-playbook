@@ -1,0 +1,45 @@
+---
+- name: Install Block
+  block:
+    - name: Install Free Fonts
+      become: true
+      ansible.builtin.package:
+        name:
+          - lmodern
+          - cm-super
+          - fonts-linuxlibertine
+          - fonts-liberation
+          - gsfonts
+          - gsfonts-x11
+        state: present
+      register: free_fonts_install
+
+    - name: Reconfigure fontconfig if needed
+      become: true
+      ansible.builtin.command:
+        cmd: dpkg-reconfigure -f noninteractive fontconfig
+      changed_when: true # avoid lint error: no-changed-when
+      when: free_fonts_install.changed
+
+    - name: Accept Windows Fonts EULA
+      become: true
+      ansible.builtin.debconf:
+        name: ttf-mscorefonts-installer
+        question: msttcorefonts/accepted-mscorefonts-eula
+        value: 'true'
+        vtype: boolean
+      register: windows_fonts_eula_debconf
+
+    - name: Install Windows Fonts
+      become: true
+      ansible.builtin.package:
+        name:
+          - ttf-mscorefonts-installer
+        state: present
+
+    - name: Reconfigure ttf-mscorefonts-installer if needed
+      become: true
+      ansible.builtin.command:
+        cmd: dpkg-reconfigure -f noninteractive ttf-mscorefonts-installer
+      changed_when: true # avoid lint error: no-changed-when
+      when: windows_fonts_eula_debconf.changed
