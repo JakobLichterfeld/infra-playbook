@@ -1,0 +1,11 @@
+---
+- name: Install Block
+  block:
+    - name: Set Swappiness
+      become: true
+      ansible.posix.sysctl:
+        sysctl_file: /etc/sysctl.conf
+        name: vm.swappiness
+        value: "{{ swappiness }}"
+        state: present
+        reload: true
