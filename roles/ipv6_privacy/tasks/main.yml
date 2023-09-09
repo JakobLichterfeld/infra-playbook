@@ -1,0 +1,20 @@
+---
+- name: Install Block
+  block:
+    - name: Set value for all interfaces
+      become: true
+      ansible.posix.sysctl:
+        sysctl_file: /etc/sysctl.d/10-ipv6-privacy.conf
+        name: net.ipv6.conf.all.use_tempaddr
+        value: "2"
+        state: present
+        reload: true
+
+    - name: Set Default value for new interfaces
+      become: true
+      ansible.posix.sysctl:
+        sysctl_file: /etc/sysctl.d/10-ipv6-privacy.conf
+        name: net.ipv6.conf.default.use_tempaddr
+        value: "2"
+        state: present
+        reload: true
