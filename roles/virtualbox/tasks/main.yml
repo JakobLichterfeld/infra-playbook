@@ -9,7 +9,7 @@
 
     - name: Create Keyrings dir on remote host if it does not exist
       ansible.builtin.file:
-        path: "/etc/apt/keyrings"
+        path: "/usr/share/keyrings/"
         state: directory
         owner: "root"
         group: "root"
@@ -19,6 +19,7 @@
       ansible.builtin.apt_key:
         url: "https://www.virtualbox.org/download/oracle_vbox_2016.asc"
         keyring: "/usr/share/keyrings/oracle-virtualbox-2016.gpg"
+      when: ansible_architecture == "x86_64"
 
     - name: Add repository
       become: true
@@ -26,6 +27,7 @@
         repo: "deb [arch=amd64 signed-by=/usr/share/keyrings/oracle-virtualbox-2016.gpg] https://download.virtualbox.org/virtualbox/{{ ansible_os_family | lower }} {{ ansible_distribution_release | lower }} {{ virtualbox.variant }} #VirtualBox"
         filename: virtualbox
         state: present
+      when: ansible_architecture == "x86_64"
 
     - name: Install
       ansible.builtin.package:
@@ -34,11 +36,13 @@
           - build-essential
           - dkms
         state: present
+      when: ansible_architecture == "x86_64"
 
     - name: Create vboxusers group
       ansible.builtin.group:
         name: vboxusers
         state: present
+      when: ansible_architecture == "x86_64"
 
     - name: Add User to vboxusers group
       ansible.builtin.user:
@@ -46,11 +50,14 @@
         groups: vboxusers
         append: yes
       notify: Apply changes to group directly
+      when: ansible_architecture == "x86_64"
 
     - name: Flush Handlers
       ansible.builtin.meta: flush_handlers
+      when: ansible_architecture == "x86_64"
 
     - name: Load Kernel Modul
       community.general.modprobe:
         name: vboxdrv
         state: present
+      when: ansible_architecture == "x86_64"
