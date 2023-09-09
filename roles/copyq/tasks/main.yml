@@ -3,7 +3,7 @@
   block:
     - name: Add PPA Repository
       become: true
-      apt_repository:
+      ansible.builtin.apt_repository:
         repo: "ppa:hluk/copyq"
         filename: copyq
         state: present
