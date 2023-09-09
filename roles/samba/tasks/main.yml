@@ -16,4 +16,5 @@
         path: /etc/samba/smb.conf
         regexp: '\s*workgroup\s*='
         line: "   workgroup = {{ samba.workgroup }}"
+        backup: true
         state: present
