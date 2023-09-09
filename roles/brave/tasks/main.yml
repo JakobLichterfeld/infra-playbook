@@ -1,6 +1,34 @@
 ---
-- name: Install
-  ansible.builtin.package:
-    name:
-      - brave-browser
-    state: present
+- name: Install Block
+  block:
+    - name: Install preparation packages
+      ansible.builtin.package:
+        name:
+          - gpg-agent
+        state: present
+
+    - name: Create Keyrings dir on remote host if it does not exist
+      ansible.builtin.file:
+        path: "/usr/share/keyrings"
+        state: directory
+        owner: "root"
+        group: "root"
+        mode: '0755'
+
+    - name: Add GPG repository key
+      ansible.builtin.apt_key:
+        url: "https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg"
+        keyring: "/usr/share/keyrings/brave-browser-archive-keyring.gpg"
+
+    - name: Add repository
+      become: true
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main"
+        filename: brave-browser-release
+        state: present
+
+    - name: Install
+      ansible.builtin.package:
+        name:
+          - brave-browser
+        state: present
