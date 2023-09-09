@@ -294,6 +294,13 @@
     name:
       - smartmontools
     state: present
+
+- name: Install X2Go Client
+  ansible.builtin.package:
+    name:
+      - x2goclient
+    state: present
+
 #
 # #############################################
 - name: Check if reboot required
