@@ -1,0 +1,27 @@
+---
+- name: Install Block
+  block:
+    - name: Add Solaar PPA Repository # Manager für Logitech G915 TKL Keyboard Receiver
+      become: true
+      ansible.builtin.apt_repository:
+        repo: "ppa:solaar-unifying/stable"
+        filename: solaar
+        state: present
+        update_cache: yes
+
+    - name: Install
+      become: true
+      ansible.builtin.package:
+        name:
+          - ratbagd
+          - piper
+          - solaar
+        state: present
+
+    - name: Add correct Device Match for Lightspeed Receiver of G915 TKL
+      ansible.builtin.template:
+        src: "logitech-g915-tkl.device.j2"
+        dest: "/usr/share/libratbag/logitech-g915-tkl.device"
+        owner: "root"
+        group: "root"
+        mode: '0644'
