@@ -1,0 +1,16 @@
+---
+- name: Install Block
+  block:
+    - name: Add PPA Repository
+      become: true
+      ansible.builtin.apt_repository:
+        repo: "ppa:obsproject/obs-studio"
+        filename: obs-studio
+        state: present
+        update_cache: yes
+
+    - name: Install
+      ansible.builtin.package:
+        name:
+          - obs-studio
+        state: present

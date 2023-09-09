@@ -25,12 +25,6 @@
           - jpegoptim
         state: present
 
-    - name: Install OSB Studio
-      ansible.builtin.package:
-        name:
-          - obs-studio
-        state: present
-
     - name: Install flatpak
       ansible.builtin.package:
         name:
