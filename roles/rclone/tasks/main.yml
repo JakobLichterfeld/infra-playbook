@@ -1,0 +1,19 @@
+---
+- name: Install Block
+  block:
+    - name: Install
+      ansible.builtin.package:
+        name:
+          - rclone
+        state: present
+
+    - name: Check if Config File is present
+      ansible.builtin.stat:
+        path: "/home/{{ ansible_user }}/.config/rclone/rclone.conf"
+      register: rclone_config_file
+
+    - name: Show hint how to create config file
+      ansible.builtin.debug:
+        msg: "No config for Rclone found for user {{ ansible_user }}. Please run: 'rclone config'. For more instructions see: https://rclone.org/drive/"
+      changed_when: not rclone_config_file.stat.exists
+      when: not rclone_config_file.stat.exists
