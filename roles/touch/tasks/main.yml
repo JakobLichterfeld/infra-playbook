@@ -1,0 +1,10 @@
+---
+- name: Install Block
+  block:
+    - name: Install
+      become: true
+      ansible.builtin.package:
+        name:
+          - ginn
+          - easystroke
+        state: present
