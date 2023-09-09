@@ -1,0 +1,36 @@
+---
+- name: Install Block
+  block:
+    - name: Install
+      become: true
+      ansible.builtin.package:
+        name:
+          - ophcrack
+          - john
+          - macchanger
+        state: present
+
+    - name: Ophcrack Menu-Entry for all Users
+      become: true
+      ansible.builtin.template:
+        src: "ophcrack.desktop.j2"
+        dest: "/usr/share/applications/ophcrack.desktop"
+        owner: "root"
+        group: "root"
+        mode: '0644'
+
+    - name: Do not Autostart MacChanger
+      become: true
+      ansible.builtin.debconf:
+        name: macchanger
+        question: macchanger/automatically_run
+        value: 'false'
+        vtype: boolean
+      register: macchanger_debconf
+
+    - name: Reconfigure macchanger if needed
+      become: true
+      ansible.builtin.command:
+        cmd: dpkg-reconfigure -f noninteractive macchanger
+      changed_when: true # avoid lint error: no-changed-when
+      when: macchanger_debconf.changed
