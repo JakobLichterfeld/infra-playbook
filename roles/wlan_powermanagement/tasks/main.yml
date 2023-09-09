@@ -1,0 +1,27 @@
+---
+- name: Install Block
+  block:
+    - name: Set facts
+      ansible.builtin.set_fact:
+        wlan_powermanagement_on: "3"  # 3: enable, 2: disable
+        wlan_powermanagement_off: "2"
+
+    - name: Enable Wlan Powermanagement
+      become: true
+      ansible.builtin.lineinfile:
+        path: /etc/NetworkManager/conf.d/default-wifi-powersave-on.conf
+        regexp: '\s*wifi.powersave\s*='
+        line: "wifi.powersave={{ wlan_powermanagement_on }}"
+        backup: true
+        state: present
+      when: not wlan_powermanagement.disable | bool
+
+    - name: Disable Wlan Powermanagement
+      become: true
+      ansible.builtin.lineinfile:
+        path: /etc/NetworkManager/conf.d/default-wifi-powersave-on.conf
+        regexp: '\s*wifi.powersave\s*='
+        line: "wifi.powersave={{ wlan_powermanagement_off }}"
+        backup: true
+        state: present
+      when: wlan_powermanagement.disable | bool
