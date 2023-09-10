@@ -22,3 +22,6 @@ guid: 1000
 ntfy:
   url: "{{ vault_ntfy_url }}"
   topic: "ansible"
+
+# Zerotier
+zerotier_network_id: "{{ vault_zerotier_network_id }}"

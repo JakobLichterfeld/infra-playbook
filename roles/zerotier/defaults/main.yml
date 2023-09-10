@@ -1,0 +1,3 @@
+---
+zerotier:
+  network_id: "{{ zerotier_network_id }}"

@@ -1,0 +1,62 @@
+---
+- name: Install Block
+  block:
+    - name: Install preparation packages
+      become: true
+      ansible.builtin.package:
+        name:
+          - gpg-agent
+        state: present
+
+    - name: Create Keyrings dir on remote host if it does not exist
+      become: true
+      ansible.builtin.file:
+        path: "/usr/share/keyrings"
+        state: directory
+        owner: "root"
+        group: "root"
+        mode: '0755'
+
+    - name: Add GPG key
+      become: true
+      ansible.builtin.apt_key:
+        url: "https://raw.githubusercontent.com/zerotier/ZeroTierOne/master/doc/contact%40zerotier.com.gpg"
+        keyring: "/usr/share/keyrings/zerotier-keyring.gpg"
+
+    - name: Add repository
+      become: true
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/zerotier-keyring.gpg] http://download.zerotier.com/{{ ansible_os_family | lower }}/{{ ansible_distribution_release | lower }} {{ ansible_distribution_release | lower }} main"
+        filename: zerotier
+        state: present
+
+    - name: Install
+      become: true
+      ansible.builtin.package:
+        name:
+          - zerotier-one
+        state: present
+      register: zerotier_installer
+
+    - name: Firewall Settings
+      become: true
+      # command, as this is the only way to run shell scripts in Ansible.
+      ansible.builtin.command:
+        cmd: "ufw allow 9993/udp"
+      register: firewall_output
+      changed_when: firewall_output.rc != 0
+
+    - name: Start service
+      become: true
+      ansible.builtin.systemd:
+        name: zerotier-one
+        state: started
+        enabled: yes
+
+    - name: Join Network
+      become: true
+      # command, as this is the only way to run shell scripts in Ansible.
+      ansible.builtin.command:
+        cmd: "zerotier-cli join {{ zerotier.network_id }}"
+      register: zerotier_join_output
+      changed_when: zerotier_join_output.stdout != "200 join OK"
