@@ -301,6 +301,24 @@
       - x2goclient
     state: present
 
+- name: Use user design theme for root
+  become: true
+  ansible.builtin.file:
+    src: "/home/{{ ansible_user }}/.themes"
+    dest: /root/.themes
+    owner: "root"
+    group: "root"
+    state: link
+
+- name: Use user design icons for root
+  become: true
+  ansible.builtin.file:
+    src: "/home/{{ ansible_user }}/.icons"
+    dest: /root/.icons
+    owner: "root"
+    group: "root"
+    state: link
+
 #
 # #############################################
 - name: Check if reboot required
