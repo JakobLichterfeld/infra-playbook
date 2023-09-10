@@ -1,0 +1,85 @@
+---
+- name: Install Block
+  block:
+    - name: Download Script
+      become: true
+      ansible.builtin.get_url:
+        url: "https://github.com/brunelli/gnome-shell-extension-installer/raw/master/gnome-shell-extension-installer"
+        dest: "/usr/bin/gnome-shell-extension-installer"
+        owner: "root"
+        group: "root"
+        mode: '0755'
+        timeout: 60
+      register: gnome_shell_extension_installer
+
+    - name: Install Applications Menu ID 6 - Application menu sorted by categories
+      become: true
+      become_user: "{{ ansible_user }}"
+      # command because there is no other way to call the installer
+      ansible.builtin.command:
+        cmd: gnome-shell-extension-installer 6
+      register: gnome_shell_extensions_id_6_output
+      changed_when: "'1 extension(s) updated.' not in gnome_shell_extensions_id_6_output.stdout"
+
+    - name: Install gTile ID 28 - Tile windows on a grid.
+      become: true
+      become_user: "{{ ansible_user }}"
+      # command because there is no other way to call the installer
+      ansible.builtin.command:
+        cmd: gnome-shell-extension-installer 28
+      register: gnome_shell_extensions_id_28_output
+      changed_when: "'1 extension(s) updated.' not in gnome_shell_extensions_id_28_output.stdout"
+
+    - name: Install Audio Output Switcher ID 751 - Adds a switch for choosing audio output to the system menu
+      become: true
+      become_user: "{{ ansible_user }}"
+      # command because there is no other way to call the installer
+      ansible.builtin.command:
+        cmd: gnome-shell-extension-installer 751
+      register: gnome_shell_extensions_id_751_output
+      changed_when: "'1 extension(s) updated.' not in gnome_shell_extensions_id_751_output.stdout"
+
+    - name: Install Dash to Panel ID 1160 – combines top bar and dock into a single panel
+      become: true
+      become_user: "{{ ansible_user }}"
+      # command because there is no other way to call the installer
+      ansible.builtin.command:
+        cmd: gnome-shell-extension-installer 1160
+      register: gnome_shell_extensions_id_1160_output
+      changed_when: "'1 extension(s) updated.' not in gnome_shell_extensions_id_1160_output.stdout"
+
+    - name: Install Emoji Selector ID 1162 – popup menu displaying most emojis, clicking on an emoji copies it to the clipboard
+      become: true
+      become_user: "{{ ansible_user }}"
+      # command because there is no other way to call the installer
+      ansible.builtin.command:
+        cmd: gnome-shell-extension-installer 1162
+      register: gnome_shell_extensions_id_1162_output
+      changed_when: "'1 extension(s) updated.' not in gnome_shell_extensions_id_1162_output.stdout"
+
+    - name: Install Gsconnect ID 1319 – connect Android to Ubuntu desktop wirelessly
+      become: true
+      become_user: "{{ ansible_user }}"
+      # command because there is no other way to call the installer
+      ansible.builtin.command:
+        cmd: gnome-shell-extension-installer 1319
+      register: gnome_shell_extensions_id_1319_output
+      changed_when: "'1 extension(s) updated.' not in gnome_shell_extensions_id_1319_output.stdout"
+
+    - name: Install Pixel Saver ID 723 – reduces size of maximised window titles
+      become: true
+      become_user: "{{ ansible_user }}"
+      # command because there is no other way to call the installer
+      ansible.builtin.command:
+        cmd: gnome-shell-extension-installer 723
+      register: gnome_shell_extensions_id_723_output
+      changed_when: "'1 extension(s) updated.' not in gnome_shell_extensions_id_723_output.stdout"
+
+    - name: Install User Themes ID 19 - Themes for Gnome Shell
+      become: true
+      become_user: "{{ ansible_user }}"
+      # command because there is no other way to call the installer
+      ansible.builtin.command:
+        cmd: gnome-shell-extension-installer 19
+      register: gnome_shell_extensions_id_19_output
+      changed_when: "'1 extension(s) updated.' not in gnome_shell_extensions_id_19_output.stdout"
