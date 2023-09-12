@@ -25,3 +25,6 @@ ntfy:
 
 # Zerotier
 zerotier_network_id: "{{ vault_zerotier_network_id }}"
+
+# Samba
+samba_workgroup: "{{ vault_samba_workgroup }}"
