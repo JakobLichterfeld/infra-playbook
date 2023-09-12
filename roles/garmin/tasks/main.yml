@@ -8,3 +8,16 @@
         pip_install_packages:
         - name: garminexport
           state: latest
+
+    - name: Allow Garmin USB devices read and written by a non-privileged users
+      become: true
+      ansible.builtin.template:
+        src: "garmin_usb_allow_non_privileged_users.j2"
+        dest: "/etc/udev/rules.d/51-garmin.rules"
+        owner: "root"
+        group: "root"
+        mode: '0644'
+      notify: Apply changes to udev rules directly
+
+    - name: Flush Handlers
+      ansible.builtin.meta: flush_handlers

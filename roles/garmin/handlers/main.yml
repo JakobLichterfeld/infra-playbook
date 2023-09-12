@@ -1,0 +1,8 @@
+---
+- name: Apply changes to udev rules directly
+  become: true
+  # command because there is no module for udev in Ansible.
+  ansible.builtin.command:
+    cmd: "udevadm control --reload-rules"
+  register: udevadm_control_result
+  changed_when: udevadm_control_result.stdout != ""
