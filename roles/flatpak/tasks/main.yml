@@ -1,0 +1,9 @@
+---
+- name: Install Block
+  block:
+    - name: Install
+      ansible.builtin.package:
+        name:
+          - flatpak
+          - gnome-software-plugin-flatpak
+        state: present
