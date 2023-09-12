@@ -314,6 +314,23 @@
     group: "root"
     mode: '0644'
 
+- name: Automatically upgrade packages without prompt
+  become: true
+  ansible.builtin.template:
+    src: "auto_upgrade.j2"
+    dest: "/etc/apt/apt.conf.d/10periodic"
+    owner: "root"
+    group: "root"
+    mode: '0644'
+
+- name: Disable apt news
+  become: true
+  # command because there is no module for pro config in Ansible.
+  ansible.builtin.command:
+    cmd: "pro config set apt_news=false"
+  register: pro_config_set_apt_news_result
+  changed_when: pro_config_set_apt_news_result.stdout != ""
+
 #
 # #############################################
 - name: Check if reboot required
