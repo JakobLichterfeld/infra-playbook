@@ -1,0 +1,8 @@
+---
+- name: Update Grub
+  become: true
+  # command because there is no Ansible module for grub
+  ansible.builtin.command:
+    cmd: "update-grub2"
+  register: update_grub_result
+  changed_when: update_grub_result.stdout != ""

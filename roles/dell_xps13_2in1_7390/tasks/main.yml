@@ -1,0 +1,31 @@
+---
+- name: Install Block
+  block:
+    - name: Enable S3 sleep
+      become: true
+      ansible.builtin.lineinfile:
+        path: /etc/default/grub
+        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="((?:(?!mem_sleep_default=deep).)*?)"$'
+        line: 'GRUB_CMDLINE_LINUX_DEFAULT="\1 mem_sleep_default=deep"'
+        backup: true
+        backrefs: true
+        state: present
+      notify: Update Grub
+
+    - name: Flush Handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Autorotate display - install
+      become: true
+      ansible.builtin.package:
+        name:
+          - iio-sensor-proxy
+        state: present
+
+    - name: Autorotate display
+      become: true
+      # command because there is no module for udev in Ansible.
+      ansible.builtin.command:
+        cmd: "gsettings set org.gnome.settings-daemon.peripherals.touchscreen orientation-lock false"
+      register: gsettings_set_touchscreen_orientation_lock_result
+      changed_when: gsettings_set_touchscreen_orientation_lock_result.stdout != ""
