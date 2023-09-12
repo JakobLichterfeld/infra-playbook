@@ -1,0 +1,16 @@
+---
+- name: Install Block
+  block:
+    - name: Set Scheduler to deadline
+      become: true
+      ansible.builtin.lineinfile:
+        path: /etc/default/grub
+        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="((?:(?!elevator=deadline).)*?)"$'
+        line: 'GRUB_CMDLINE_LINUX_DEFAULT="\1 elevator=deadline"'
+        backup: true
+        backrefs: true
+        state: present
+      notify: Update Grub
+
+    - name: Flush Handlers
+      ansible.builtin.meta: flush_handlers
