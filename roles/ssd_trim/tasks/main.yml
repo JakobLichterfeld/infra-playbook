@@ -1,0 +1,34 @@
+---
+- name: Trim for encrypted filesystem
+  block:
+    - name: Check if discard is configured for encypted mount points
+      ansible.builtin.lineinfile:
+        path: /etc/crypttab
+        regexp: '^lvm\s*UUID=.*((?:(discard)))$'
+        backup: true
+        state: absent
+      check_mode: true
+      register: crypttab_check_discard
+      changed_when: false
+
+    - name: Enable discard for encypted mount points
+      ansible.builtin.lineinfile:
+        path: /etc/crypttab
+        regexp: '^lvm\s*UUID=(.*?luks)$'
+        line: 'lvm  UUID=\1,discard'
+        backup: true
+        backrefs: true
+        state: present
+      when: crypttab_check_discard.found == 0
+      notify: Update initramfs
+
+    - name: Flush Handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Daily trim for all SSD mount points with log file creation
+      ansible.builtin.template:
+        src: "batched_discard.j2"
+        dest: "/etc/cron.daily/batched_discard"
+        owner: "root"
+        group: "root"
+        mode: '0755'

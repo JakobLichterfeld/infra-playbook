@@ -1,0 +1,8 @@
+---
+- name: Update initramfs
+  become: true
+  # command because there is no Ansible module for initramfs
+  ansible.builtin.command:
+    cmd: "update-initramfs -u -k all"
+  register: update_initramfs_result
+  changed_when: update_initramfs_result.stdout != ""

@@ -1,0 +1,13 @@
+#!/bin/sh
+# By default we assume only / is on an SSD.
+# You can add more SSD mount points, separated by spaces.
+# Make sure all mount points are within the quotes. For example:
+# SSD_MOUNT_POINTS='/ /boot /home /media/my_other_ssd'
+
+SSD_MOUNT_POINTS='{{ssd_trim.mount_points}}'
+
+LOG=/var/log/batched_discard.log
+echo "*** $(date -R) ***" >> $LOG
+for mount_point in $SSD_MOUNT_POINTS; do
+    fstrim -v $mount_point >> $LOG
+done
