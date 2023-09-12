@@ -1,0 +1,26 @@
+---
+- name: Install Block
+  block:
+    - name: Minimize on Click on Opened App
+      become: true
+      # command because there is no module for udev in Ansible.
+      ansible.builtin.command:
+        cmd: "gsettings set org.gnome.shell.extensions.dash-to-dock click-action 'minimize'"
+      register: gsettings_set_click_action_result
+      changed_when: gsettings_set_click_action_result.stdout != ""
+
+    - name: Disable Touchpad when external Mouse is connected
+      become: true
+      # command because there is no module for udev in Ansible.
+      ansible.builtin.command:
+        cmd: "gsettings set org.gnome.desktop.peripherals.touchpad send-events disabled-on-external-mouse"
+      register: gsettings_set_touchpad_send_events_result
+      changed_when: gsettings_set_touchpad_send_events_result.stdout != ""
+
+    - name: Show battery percentage in indicator
+      become: true
+      # command because there is no module for udev in Ansible.
+      ansible.builtin.command:
+        cmd: "gsettings set org.gnome.desktop.interface show-battery-percentage true"
+      register: gsettings_set_show_battery_percentage_result
+      changed_when: gsettings_set_show_battery_percentage_result.stdout != ""
