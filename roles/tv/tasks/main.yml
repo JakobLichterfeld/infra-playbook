@@ -154,3 +154,37 @@
 #         fi
 #     fi
 # fi
+
+# myrc_local_used="false"     #will be set to true, when script uses /etc/myrc.local for backwards combatibility to /etc/rc.local, then an systemd unit will be created
+# if [ ! -f /etc/myrc.local ]; then
+#     touch /etc/myrc.local
+#     echo "#!/bin/sh -e"> /etc/myrc.local
+#     {
+#         echo
+#         echo "exit 0"
+#     } >>/etc/myrc.local
+# fi
+
+# if [ "$myrc_local_used" = "true" ]; then
+#     touch /etc/systemd/system/myrc-local.service
+#     echo "[Unit]" >/etc/systemd/system/myrc-local.service
+#     {
+#         echo "Description=/etc/myrc.local as backwards combatibility to rc.local"
+#         echo "ConditionPathExists=/etc/myrc.local"
+#         echo ""
+#         echo "[Service]"
+#         echo "Type=forking"
+#         echo 'ExecStart=/etc/myrc.local start'
+#         echo "TimeoutSec=0"
+#         echo "StandardOutput=tty"
+#         echo "RemainAfterExit=yes"
+#         echo ""
+#         echo "[Install]"
+#         echo "WantedBy=multi-user.target"
+#         } >>/etc/systemd/system/myrc-local.service
+
+#     chmod +x /etc/myrc.local
+#     systemctl daemon-reload
+#     systemctl enable myrc-local
+#     systemctl start myrc-local.service
+# fi
