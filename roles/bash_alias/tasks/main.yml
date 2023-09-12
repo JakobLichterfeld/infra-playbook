@@ -1,0 +1,14 @@
+---
+- name: Install Block
+  block:
+    - name: Add Bash alias
+      ansible.builtin.lineinfile:
+        path: "/home/{{ ansible_user }}/.bash_aliases"
+        regexp: '^alias uud='
+        line: 'alias uud=''echo "" && echo "" && echo "Update" && sudo apt update && echo "" && echo "" && echo "Upgrade" && sudo apt --yes upgrade && echo "" && echo "" && echo "Full-Upgrade" && sudo apt --yes full-upgrade && echo "" && echo "" && echo "Snap Update" && sudo snap refresh && echo "" && echo "" && echo "Flatpak Update" && sudo flatpak update'''
+        backup: true
+        state: present
+      notify: Apply changes to bash_alias directly
+
+    - name: Flush Handlers
+      ansible.builtin.meta: flush_handlers

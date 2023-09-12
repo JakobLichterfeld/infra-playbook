@@ -1,0 +1,8 @@
+---
+- name: Apply changes to bash_alias directly
+  become: true
+  # command because "source <file>" only works as `sudo -u <username> -s source <file>' in Ansible.
+  ansible.builtin.command:
+    cmd: "sudo -u {{ ansible_user }} -s source /home/{{ ansible_user }}/.bash_aliases"
+  register: source_result
+  changed_when: source_result.stdout != ""
