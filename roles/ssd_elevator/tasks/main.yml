@@ -4,7 +4,7 @@
     - name: Check if Scheduler is configured in the boot command
       ansible.builtin.lineinfile:
         path: /etc/default/grub
-        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="((?:(?!elevator=\w*).)*?)"$'
+        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT=\".*?((?:(elevator=\w*))).*?\"$'
         backup: true
         state: absent
       check_mode: true
@@ -19,7 +19,7 @@
         backup: true
         backrefs: true
         state: present
-      when: grub_cmdline_check_scheduler.found > 0
+      when: grub_cmdline_check_scheduler.found == 0
       notify: Update Grub
 
     - name: Update Scheduler config if needed
@@ -28,7 +28,7 @@
         regexp: '(.*)elevator=\w*(.*)$'
         replace: '\1elevator=deadline\2'
         backup: true
-      when: grub_cmdline_check_scheduler.found == 0
+      when: grub_cmdline_check_scheduler.found >= 0
       notify: Update Grub
 
     - name: Flush Handlers
