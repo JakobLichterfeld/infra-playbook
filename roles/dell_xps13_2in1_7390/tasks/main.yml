@@ -1,20 +1,41 @@
 ---
-- name: Install Block
+- name: Enable S3 Sleep
   block:
-    - name: Enable S3 sleep
-      become: true
+    - name: Check if Sleep is configured in the boot command
       ansible.builtin.lineinfile:
         path: /etc/default/grub
-        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="((?:(?!mem_sleep_default=deep).)*?)"$'
+        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="((?:(?!mem_sleep_default=\w*).)*?)"$'
+        backup: true
+        state: absent
+      check_mode: true
+      register: grub_cmdline_check_scheduler
+      changed_when: false
+
+    - name: Insert Sleep config if missing
+      ansible.builtin.lineinfile:
+        path: /etc/default/grub
+        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT=\"(.*?)\"$'
         line: 'GRUB_CMDLINE_LINUX_DEFAULT="\1 mem_sleep_default=deep"'
         backup: true
         backrefs: true
         state: present
+      when: grub_cmdline_check_scheduler.found > 0
+      notify: Update Grub
+
+    - name: Update Sleep config if needed
+      ansible.builtin.replace:
+        path: /etc/default/grub
+        regexp: '(.*)mem_sleep_default=\w*(.*)$'
+        replace: '\1mem_sleep_default=deep\2'
+        backup: true
+      when: grub_cmdline_check_scheduler.found == 0
       notify: Update Grub
 
     - name: Flush Handlers
       ansible.builtin.meta: flush_handlers
 
+- name: Install Block
+  block:
     - name: Autorotate display - install
       become: true
       ansible.builtin.package:
