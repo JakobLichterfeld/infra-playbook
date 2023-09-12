@@ -83,20 +83,6 @@
       - openjdk-18-jre
     state: present
 
-- name: Install flatpak
-  ansible.builtin.package:
-    name:
-      - flatpak
-      - gnome-software-plugin-flatpak
-    state: present
-
-- name: Install snap
-  ansible.builtin.package:
-    name:
-      - snapd
-      - gnome-software-plugin-snap
-    state: present
-
 - name: Install KDE programs under Gnome
   ansible.builtin.package:
     name:
@@ -318,6 +304,15 @@
     owner: "root"
     group: "root"
     state: link
+
+- name: Re-enable hibernate by default
+  become: true
+  ansible.builtin.template:
+    src: "enable_hibernate.pkla.j2"
+    dest: "/etc/polkit-1/localauthority/50-local.d/com.ubuntu.enable-hibernate.pkla"
+    owner: "root"
+    group: "root"
+    mode: '0644'
 
 #
 # #############################################
