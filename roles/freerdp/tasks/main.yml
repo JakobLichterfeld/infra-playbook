@@ -1,0 +1,9 @@
+---
+- name: Install Block
+  block:
+    - name: Install
+      ansible.builtin.package:
+        name:
+          - freerdp2-x11
+          - freerdp2-wayland
+        state: present
