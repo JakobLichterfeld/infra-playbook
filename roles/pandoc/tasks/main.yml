@@ -1,0 +1,8 @@
+---
+- name: Install Block
+  block:
+    - name: Install
+      ansible.builtin.package:
+        name:
+          - pandoc
+        state: present
