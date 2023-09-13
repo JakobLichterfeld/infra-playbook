@@ -14,13 +14,6 @@
         cmd: lpadmin -p Roger-Router-Fax -m drv:///sample.drv/generic.ppd -v socket://localhost:9100/ -E -o PageSize=A4
         creates: /etc/cups/ppd/Roger-Router-Fax.ppd
 
-    - name: Install flatpak
-      ansible.builtin.package:
-        name:
-          - flatpak
-          - gnome-software-plugin-flatpak
-        state: present
-
     - name: Install
       community.general.flatpak:
         name:

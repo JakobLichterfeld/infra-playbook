@@ -13,13 +13,6 @@
           - ca-certificates-java
         state: present
 
-    - name: Install snap
-      ansible.builtin.package:
-        name:
-          - snapd
-          - gnome-software-plugin-snap
-        state: present
-
     - name: Install shellcheck
       community.general.snap:
         name: shellcheck

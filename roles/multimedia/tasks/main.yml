@@ -45,13 +45,6 @@
           - picard # MusicBrainz Picard
         state: present
 
-    - name: Install flatpak
-      ansible.builtin.package:
-        name:
-          - flatpak
-          - gnome-software-plugin-flatpak
-        state: present
-
     - name: Install Spotify
       community.general.flatpak:
         name: com.spotify.Client
