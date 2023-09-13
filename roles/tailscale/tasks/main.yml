@@ -1,0 +1,44 @@
+---
+- name: Install Block
+  block:
+    - name: Install preparation packages
+      become: true
+      ansible.builtin.package:
+        name:
+          - gpg-agent
+        state: present
+
+    - name: Create Keyrings dir on remote host if it does not exist
+      become: true
+      ansible.builtin.file:
+        path: "/usr/share/keyrings"
+        state: directory
+        owner: "root"
+        group: "root"
+        mode: '0755'
+
+    - name: Add GPG repository key
+      become: true
+      ansible.builtin.apt_key:
+        url: "https://pkgs.tailscale.com/stable/ubuntu/{{ ansible_distribution_release | lower }}.noarmor.gpg"
+        keyring: "/usr/share/keyrings/tailscale-archive-keyring.gpg"
+
+    - name: Add repository
+      become: true
+      ansible.builtin.apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/tailscale-archive-keyring.gpg] https://pkgs.tailscale.com/stable/ubuntu {{ ansible_distribution_release | lower }} main"
+        filename: tailscale
+        state: present
+
+    - name: Install
+      become: true
+      ansible.builtin.package:
+        name:
+          - tailscale
+        state: present
+
+    - name: Enable Service
+      ansible.builtin.service:
+        name: tailscaled
+        state: started
+        enabled: yes
