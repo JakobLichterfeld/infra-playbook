@@ -1,0 +1,7 @@
+---
+- name: Install Block
+  block:
+    - name: Install
+      community.general.snap:
+        name: figma-linux
+        state: present
