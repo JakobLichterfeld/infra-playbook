@@ -1,0 +1,17 @@
+---
+- name: Install Block
+  block:
+    - name: Add PPA Repository
+      become: true
+      ansible.builtin.apt_repository:
+        repo: "ppa:atareao/atareao"
+        filename: touchpad_indicator
+        state: present
+        update_cache: yes
+
+    - name: Install
+      become: true
+      ansible.builtin.package:
+        name:
+          - touchpad-indicator
+        state: present
