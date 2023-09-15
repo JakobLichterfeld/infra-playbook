@@ -6,3 +6,19 @@
     cmd: "update-grub2"
   register: update_grub_result
   changed_when: update_grub_result.stdout != ""
+
+- name: Update initramfs
+  become: true
+  # command because there is no Ansible module for initramfs
+  ansible.builtin.command:
+    cmd: "update-initramfs -u -k all"
+  register: update_initramfs_result
+  changed_when: update_initramfs_result.stdout != ""
+
+- name: Apply changes to etc_profile directly
+  become: true
+  # command because "source <file>" only works as `sudo -u <username> -s source <file>' in Ansible.
+  ansible.builtin.command:
+    cmd: "sudo -u {{ ansible_user }} -s source /etc/profile"
+  register: source_result
+  changed_when: source_result.stdout != ""

@@ -1,0 +1,51 @@
+---
+- name: Workaround throttling issue
+  block:
+    - name: Install Dependencies
+      become: true
+      ansible.builtin.package:
+        name:
+          - git
+          - build-essential
+          - python3-dev
+          - libdbus-glib-1-dev
+          - libgirepository1.0-dev
+          - libcairo2-dev
+          - python3-cairo-dev
+          - python3-venv
+          - python3-wheel
+        state: present
+
+    - name: Create destination folder if needed
+      become: true
+      become_user: "{{ ansible_user }}"
+      ansible.builtin.file:
+        path: "{{ download_dir_on_remote_host }}/throttled"
+        state: directory
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+
+    - name: Git checkout throttled
+      become: true
+      become_user: "{{ ansible_user }}"
+      ansible.builtin.git:
+        repo: "https://github.com/erpalma/throttled.git"
+        dest: "{{ download_dir_on_remote_host }}/throttled"
+        version: master
+      register: throttled_repo
+
+    - name: Execute installer
+      ansible.builtin.command:
+        cmd: "sh {{ download_dir_on_remote_host }}/throttled/install.sh"
+      register: throttled_installer_output
+      when: throttled_repo.changed
+      changed_when: throttled_installer_output.stdout != ""
+
+    - name: Disable thermald Service
+      ansible.builtin.systemd_service:
+        name: thermald
+        state: stopped
+        enabled: false
+        masked: true
+

@@ -1,0 +1,17 @@
+---
+- name: Autorotate display
+  block:
+    - name: Autorotate display - install
+      become: true
+      ansible.builtin.package:
+        name:
+          - iio-sensor-proxy
+        state: present
+
+    - name: Autorotate display - setting
+      become: true
+      # command because there is no module for udev in Ansible.
+      ansible.builtin.command:
+        cmd: "gsettings set org.gnome.settings-daemon.peripherals.touchscreen orientation-lock false"
+      register: gsettings_set_touchscreen_orientation_lock_result
+      changed_when: gsettings_set_touchscreen_orientation_lock_result.stdout != ""

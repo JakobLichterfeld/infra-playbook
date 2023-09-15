@@ -1,0 +1,32 @@
+---
+- name: Enable ACPI Linux support
+  block:
+    - name: Check if ACPI osi is configured in the boot command
+      ansible.builtin.lineinfile:
+        path: /etc/default/grub
+        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="((?:(?!acpi_osi=\w*).)*?)"$'
+        backup: true
+        state: absent
+      check_mode: true
+      register: grub_cmdline_check_acpi_osi
+      changed_when: false
+
+    - name: Insert ACPI osi config if missing
+      ansible.builtin.lineinfile:
+        path: /etc/default/grub
+        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT=\"(.*?)\"$'
+        line: 'GRUB_CMDLINE_LINUX_DEFAULT="\1 acpi_osi=Linux"'
+        backup: true
+        backrefs: true
+        state: present
+      when: grub_cmdline_check_acpi_osi.found > 0
+      notify: Update Grub
+
+    - name: Update ACPI osi config if needed
+      ansible.builtin.replace:
+        path: /etc/default/grub
+        regexp: '(.*)acpi_osi=\w*(.*)$'
+        replace: '\1acpi_osi=Linux\2'
+        backup: true
+      when: grub_cmdline_check_acpi_osi.found == 0
+      notify: Update Grub

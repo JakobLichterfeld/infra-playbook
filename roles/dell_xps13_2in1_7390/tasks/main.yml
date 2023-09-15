@@ -1,52 +1,24 @@
 ---
-- name: Enable S3 Sleep
-  block:
-    - name: Check if Sleep is configured in the boot command
-      ansible.builtin.lineinfile:
-        path: /etc/default/grub
-        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="((?:(?!mem_sleep_default=\w*).)*?)"$'
-        backup: true
-        state: absent
-      check_mode: true
-      register: grub_cmdline_check_scheduler
-      changed_when: false
+- name: Enable S3 sleep
+  ansible.builtin.include_tasks: enable_s3_sleep.yml
 
-    - name: Insert Sleep config if missing
-      ansible.builtin.lineinfile:
-        path: /etc/default/grub
-        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT=\"(.*?)\"$'
-        line: 'GRUB_CMDLINE_LINUX_DEFAULT="\1 mem_sleep_default=deep"'
-        backup: true
-        backrefs: true
-        state: present
-      when: grub_cmdline_check_scheduler.found > 0
-      notify: Update Grub
+- name: Prevent some hangs
+  ansible.builtin.include_tasks: prevent_some_hangs.yml
 
-    - name: Update Sleep config if needed
-      ansible.builtin.replace:
-        path: /etc/default/grub
-        regexp: '(.*)mem_sleep_default=\w*(.*)$'
-        replace: '\1mem_sleep_default=deep\2'
-        backup: true
-      when: grub_cmdline_check_scheduler.found == 0
-      notify: Update Grub
+- name: Internal microphone
+  ansible.builtin.include_tasks: internal_microphone.yml
 
-    - name: Flush Handlers
-      ansible.builtin.meta: flush_handlers
+- name: Improve CPU performance
+  ansible.builtin.include_tasks: improve_cpu_performance.yml
 
-- name: Install Block
-  block:
-    - name: Autorotate display - install
-      become: true
-      ansible.builtin.package:
-        name:
-          - iio-sensor-proxy
-        state: present
+- name: Enable ACPI Linux support
+  ansible.builtin.include_tasks: enable_acpi_linux_support.yml
 
-    - name: Autorotate display
-      become: true
-      # command because there is no module for udev in Ansible.
-      ansible.builtin.command:
-        cmd: "gsettings set org.gnome.settings-daemon.peripherals.touchscreen orientation-lock false"
-      register: gsettings_set_touchscreen_orientation_lock_result
-      changed_when: gsettings_set_touchscreen_orientation_lock_result.stdout != ""
+- name: HW settings
+  ansible.builtin.include_tasks: hw_settings.yml
+
+- name: Autorotate display
+  ansible.builtin.include_tasks: autorotate_display.yml
+
+- name: Workaround throttling issue
+  ansible.builtin.include_tasks: workaround_throttling_issue.yml

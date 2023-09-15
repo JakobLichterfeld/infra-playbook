@@ -1,0 +1,5 @@
+# Force loading of the Dell Laptop SMM BIOS hwmon driver
+options dell-smm-hwmon ignore_dmi=1
+
+# disable psmouse, as dmesg | grep -i psmouse returns errors but touchpad works
+blacklist psmouse

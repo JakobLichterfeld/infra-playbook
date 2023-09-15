@@ -1,0 +1,64 @@
+---
+- name: Prevent some hangs - i915 enable_dc
+  block:
+    - name: Check if i915 enable_dc is configured in the boot command
+      ansible.builtin.lineinfile:
+        path: /etc/default/grub
+        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="((?:(?!i915.enable_dc=\w*).)*?)"$'
+        backup: true
+        state: absent
+      check_mode: true
+      register: grub_cmdline_check_enable_dc
+      changed_when: false
+
+    - name: Insert i915 enable_dc config if missing
+      ansible.builtin.lineinfile:
+        path: /etc/default/grub
+        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT=\"(.*?)\"$'
+        line: 'GRUB_CMDLINE_LINUX_DEFAULT="\1 i915.enable_dc=0"'
+        backup: true
+        backrefs: true
+        state: present
+      when: grub_cmdline_check_enable_dc.found > 0
+      notify: Update Grub
+
+    - name: Update i915 enable_dc config if needed
+      ansible.builtin.replace:
+        path: /etc/default/grub
+        regexp: '(.*)i915.enable_dc=\w*(.*)$'
+        replace: '\1i915.enable_dc=0\2'
+        backup: true
+      when: grub_cmdline_check_enable_dc.found == 0
+      notify: Update Grub
+
+- name: Prevent some hangs - intel_idle max_cstate
+  block:
+    - name: Check if intel_idle max_cstate is configured in the boot command
+      ansible.builtin.lineinfile:
+        path: /etc/default/grub
+        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="((?:(?!intel_idle.max_cstate=\w*).)*?)"$'
+        backup: true
+        state: absent
+      check_mode: true
+      register: grub_cmdline_check_intel_max_cstate
+      changed_when: false
+
+    - name: Insert intel_idle max_cstate config if missing
+      ansible.builtin.lineinfile:
+        path: /etc/default/grub
+        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT=\"(.*?)\"$'
+        line: 'GRUB_CMDLINE_LINUX_DEFAULT="\1 intel_idle.max_cstate=2"'
+        backup: true
+        backrefs: true
+        state: present
+      when: grub_cmdline_check_intel_max_cstate.found > 0
+      notify: Update Grub
+
+    - name: Update intel_idle max_cstate config if needed
+      ansible.builtin.replace:
+        path: /etc/default/grub
+        regexp: '(.*)intel_idle.max_cstate=\w*(.*)$'
+        replace: '\1intel_idle.max_cstate=2\2'
+        backup: true
+      when: grub_cmdline_check_intel_max_cstate.found == 0
+      notify: Update Grub

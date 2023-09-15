@@ -1,0 +1,32 @@
+---
+- name: Internal microphone
+  block:
+    - name: Check if snd-intel-dspcfg dsp_driver is configured in the boot command
+      ansible.builtin.lineinfile:
+        path: /etc/default/grub
+        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="((?:(?!snd-intel-dspcfg.dsp_driver=\w*).)*?)"$'
+        backup: true
+        state: absent
+      check_mode: true
+      register: grub_cmdline_check_snd_intel_dspcfg_dsp_driver
+      changed_when: false
+
+    - name: Insert snd-intel-dspcfg dsp_driver config if missing
+      ansible.builtin.lineinfile:
+        path: /etc/default/grub
+        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT=\"(.*?)\"$'
+        line: 'GRUB_CMDLINE_LINUX_DEFAULT="\1 snd-intel-dspcfg.dsp_driver=1"'
+        backup: true
+        backrefs: true
+        state: present
+      when: grub_cmdline_check_snd_intel_dspcfg_dsp_driver.found > 0
+      notify: Update Grub
+
+    - name: Update snd-intel-dspcfg dsp_driver config if needed
+      ansible.builtin.replace:
+        path: /etc/default/grub
+        regexp: '(.*)snd-intel-dspcfg.dsp_driver=\w*(.*)$'
+        replace: '\1snd-intel-dspcfg.dsp_driver=1\2'
+        backup: true
+      when: grub_cmdline_check_snd_intel_dspcfg_dsp_driver.found == 0
+      notify: Update Grub

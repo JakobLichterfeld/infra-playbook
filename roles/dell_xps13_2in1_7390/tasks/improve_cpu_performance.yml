@@ -1,0 +1,32 @@
+---
+- name: Improve CPU performance
+  block:
+    - name: Check if mitigations is configured in the boot command
+      ansible.builtin.lineinfile:
+        path: /etc/default/grub
+        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT="((?:(?!mitigations=\w*).)*?)"$'
+        backup: true
+        state: absent
+      check_mode: true
+      register: grub_cmdline_check_mitigations
+      changed_when: false
+
+    - name: Insert mitigations config if missing
+      ansible.builtin.lineinfile:
+        path: /etc/default/grub
+        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT=\"(.*?)\"$'
+        line: 'GRUB_CMDLINE_LINUX_DEFAULT="\1 mitigations=off"'
+        backup: true
+        backrefs: true
+        state: present
+      when: grub_cmdline_check_mitigations.found > 0
+      notify: Update Grub
+
+    - name: Update mitigations config if needed
+      ansible.builtin.replace:
+        path: /etc/default/grub
+        regexp: '(.*)mitigations=\w*(.*)$'
+        replace: '\1mitigations=off\2'
+        backup: true
+      when: grub_cmdline_check_mitigations.found == 0
+      notify: Update Grub
