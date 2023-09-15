@@ -1,0 +1,6 @@
+---
+- name: Send ntfy.sh message
+  ansible.builtin.uri:
+    url: "{{ ntfy.url }}/{{ ntfy.topic }}"
+    method: POST
+    body: "{{ ntfy_message | default('message body not set', true) }}"
