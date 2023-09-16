@@ -1,0 +1,97 @@
+---
+- hosts: desktop_ubuntu
+  name: Desktop Ubuntu
+  gather_facts: yes
+  become: yes
+
+  pre_tasks:
+    - name: SSH Juggle Port
+      ansible.builtin.import_tasks: tasks/ssh_juggle_port.yml
+
+  roles:
+    - role: snap
+    - role: flatpak
+    - role: desktop
+    - role: dvd_playback
+    - role: jakoblichterfeld.winehq
+    - role: jakoblichterfeld.calibre
+    - role: adobe_digital_editions
+    - role: jakoblichterfeld.latex_texlive
+    - role: latex_tools_and_editors
+    - role: cellwriter
+   #- role: epson_workforce
+    - role: android_tools
+    - role: jakoblichterfeld.android_studio
+    - role: jakoblichterfeld.amok_exifsorter
+    - role: graphic_tools
+    - role: obs_studio
+    - role: jakoblichterfeld.sony_gps_assist_data
+    - role: brave
+    - role: google_chrome
+    - role: amazon_prime_video
+    - role: amazon_prime_music
+    - role: roger_router
+    - role: teamviewer
+    - role: wireshark
+    - role: dev_web
+    - role: tor_browser_bundle
+    - role: multimedia
+    - role: dev_sw
+    - role: smartgit
+      vars:
+        smartgit:
+          version: "23_1-preview-12"
+    - role: vscode
+    - role: geerlingguy.docker
+      vars:
+        docker_users:
+          - "{{ ansible_user }}"
+    - role: geerlingguy.pip
+    - role: geerlingguy.ansible
+      vars:
+        ansible_install_method: pip
+        ansible_pip_executable: pip3
+        ansible_install_version_pip: "" # "" means latest
+        ansible_install_pip_extra_args: "--user"
+    - role: games
+    - role: ventoy
+    - role: unified_remote
+    - role: virtualbox
+    - role: copyq
+    - role: monitor_color_profiling
+    - role: samba
+      vars:
+        samba:
+          workgroup: "{{samba_workgroup}}"
+    - role: exfat
+    - role: ntfs
+    - role: garmin
+    - role: keyboard_g915_tkl
+    - role: rclone
+    - role: tlp
+    - role: fonts
+    - role: touch
+    # - role: tv
+    - role: whitehat
+    - role: swappiness
+    - role: wlan_powermanagement
+    - role: ipv6_privacy
+    - role: zerotier
+    - role: tailscale
+    - role: bash_alias
+    - role: gnome_shell_extensions
+    - role: gnome_shell_config
+    - role: dell_xps13_2in1_7390
+    - role: ssd_elevator
+    - role: ssd_trim
+    - role: figma
+    - role: pandoc
+    - role: touchpad_indicator
+    - role: freerdp
+    - role: lid_closed_suspension_disable
+
+  tasks:
+    - name: Send ntfy.sh message
+      ansible.builtin.import_tasks: tasks/send_ntfy_message.yml
+      vars:
+        ntfy_message: "Desktop Ubuntu play for {{ inventory_hostname }} completed ✅ 🥳"

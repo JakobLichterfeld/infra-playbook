@@ -30,15 +30,6 @@
   ansible.builtin.apt:
     autoremove: yes
 
-- name: Backup source.list
-  ansible.builtin.copy:
-    src: "/etc/apt/sources.list"
-    dest: "/etc/apt/sources.list"
-    owner: "root"
-    group: "root"
-    mode: '0644'
-    backup: yes
-
 - name: Install essential packages
   ansible.builtin.package:
     name:
